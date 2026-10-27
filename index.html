@@ -1,0 +1,1061 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#070711"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg" type="image/svg+xml"><meta name="description" content="Reino Sombrio: uma aventura de fantasia 2D com 50 mundos, 50 chefes e uma ultimate cinematográfica. ">
+<title>Reino Sombrio — Edição Suprema · 50 Mundos</title>
+<style>
+:root{--gold:#f7c86b;--ink:#090b17;--panel:#11162a}
+*{box-sizing:border-box}html,body{margin:0;background:radial-gradient(ellipse at 50% -15%,#292348 0%,#0a0b17 54%,#03040a 100%);color:#f5f0df;font-family:system-ui,Segoe UI,sans-serif;min-height:100%;overflow-x:hidden;overscroll-behavior:none}body{touch-action:pan-y;-webkit-tap-highlight-color:transparent} .controls button{ -webkit-user-select:none; user-select:none; -webkit-touch-callout:none }
+body{display:flex;justify-content:center;padding:12px}
+.shell{width:min(100%,1000px)}header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 10px}
+h1{font-size:clamp(20px,4vw,32px);margin:0;color:var(--gold);letter-spacing:1px;text-shadow:0 2px #633a22,0 0 18px #a47aff55}header p{margin:3px 0 0;color:#b9bfd6;font-size:12px}
+.pill{border:1px solid #505b82;border-radius:99px;padding:7px 10px;font-size:12px;color:#cfd5ed;white-space:nowrap}
+.gamebox{position:relative;border:2px solid transparent;border-radius:14px;overflow:hidden;background:linear-gradient(#080b1c,#080b1c) padding-box,linear-gradient(135deg,#c8a8ff,#5666a0 30%,#f6d58b 57%,#8061db 82%,#77eaff) border-box;box-shadow:0 18px 55px #000d,0 0 0 1px #d5b4ff22,0 0 36px #885cff45,inset 0 0 30px #6c4fc522}
+canvas{display:block;width:100%;height:auto;aspect-ratio:16/9;image-rendering:auto;touch-action:none;background:#080b1c}
+.fullscreen-btn{position:absolute;z-index:7;right:12px;top:54px;padding:7px 10px;font-size:10px;letter-spacing:.6px;color:#f6edff;background:linear-gradient(135deg,#232643e8,#101326eb);border:1px solid #b8a5ff;border-radius:999px;box-shadow:0 3px 18px #0008,0 0 13px #9c73ff30;backdrop-filter:blur(8px)}.hud{position:absolute;top:10px;left:12px;right:12px;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none;text-shadow:0 2px 3px #000;transition:opacity .18s}
+.hudgroup{display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:700}
+.health{width:150px;max-width:35vw;height:12px;background:#361b2c;border:1px solid #f5a4a4;border-radius:99px;overflow:hidden}.health>div{height:100%;width:100%;background:linear-gradient(90deg,#ed425a,#ff9b62);transition:width .15s}
+.bossbar{position:absolute;left:20%;right:20%;top:55px;text-align:center;font-size:11px;font-weight:800;display:none;text-shadow:0 2px 3px #000}.bossbar .health{width:100%;max-width:none;height:9px;margin-top:4px}
+.overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;background:radial-gradient(ellipse at 50% 45%,#1715309c,#040510e8);backdrop-filter:blur(3px);padding:18px;z-index:8}
+.dialog{max-width:440px;background:linear-gradient(145deg,#17182eef,#080b18f5);border:1px solid #9c8bd5;border-radius:16px;padding:22px;box-shadow:0 16px 48px #000c,0 0 26px #9e7cff28,inset 0 1px #ffffff13}
+.dialog h2{margin:0 0 8px;color:var(--gold);font-size:clamp(23px,5vw,36px)}.dialog p{color:#d4d8e8;line-height:1.45;font-size:14px}
+button{font:inherit;cursor:pointer;color:#fff;background:linear-gradient(#6a4eb1,#392b70);border:1px solid #b3a0ff;border-radius:10px;padding:10px 15px;font-weight:800;box-shadow:0 3px #211940;touch-action:manipulation}
+button:active{transform:translateY(2px);box-shadow:0 1px #211940}.primary{background:linear-gradient(#f6ce72,#b86c35);border-color:#ffe4a3;color:#24152a}
+.controls{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 2px 2px;touch-action:none;user-select:none;-webkit-user-select:none}.move,.actions{display:flex;gap:8px;align-items:center}.move{flex:0 0 auto}.joystick{width:116px;height:116px;position:relative;border:2px solid #8290b9;border-radius:50%;background:radial-gradient(circle,#252d49 0%,#151a2d 68%,#090d19 100%);box-shadow:inset 0 0 15px #8ea7ff22,0 4px #050711,0 0 10px #7087ff22;touch-action:none;user-select:none;-webkit-user-select:none}.joystick:before{content:"";position:absolute;left:50%;top:50%;width:66%;height:66%;transform:translate(-50%,-50%);border:1px dashed #8290b955;border-radius:50%;pointer-events:none}.joy-knob{position:absolute;left:50%;top:50%;width:46px;height:46px;transform:translate(-50%,-50%);border:2px solid #c7d3ff;border-radius:50%;background:radial-gradient(circle at 35% 25%,#6978a4,#202944 75%);box-shadow:inset 0 2px 6px #fff4,0 2px 6px #0009;pointer-events:none}.joy-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#d4dcff77;font-size:10px;font-weight:800;letter-spacing:1px;pointer-events:none}.controls button{min-width:54px;min-height:54px;font-size:18px;user-select:none;-webkit-user-select:none;touch-action:none;border:2px solid #8290b9;border-radius:50%;background:radial-gradient(circle at 35% 25%,#444d6c,#161b30 72%);box-shadow:inset 0 2px 5px #ffffff22,0 4px #050711,0 0 8px #7087ff22;padding:5px;text-shadow:0 1px 2px #000}.controls button em{display:block;font-style:normal;font-size:9px;line-height:1.1;letter-spacing:.3px}.controls .attack{font-size:18px;min-width:54px;min-height:54px;background:radial-gradient(circle at 35% 25%,#a8445d,#421629 75%);border-color:#ff9aa9}.controls .magic{font-size:18px;min-width:54px;min-height:54px;background:radial-gradient(circle at 35% 25%,#3d8cbb,#18294c 75%);border-color:#a6e5ff}.controls .ultimate{font-size:18px;min-width:54px;min-height:54px;background:radial-gradient(circle at 35% 25%,#c58aff,#38205f 75%);border-color:#fff0bb;box-shadow:0 0 12px #d75cff66}.controls .jump{background:linear-gradient(#4d9b72,#24543d);border-color:#a7ffd0}.controls .attack{font-size:13px;min-width:72px;background:linear-gradient(#a8445d,#6c243b);border-color:#ff9aa9}.controls .magic{font-size:12px;min-width:72px;background:linear-gradient(#3d8cbb,#344078);border-color:#a6e5ff}.controls .ultimate{font-size:11px;min-width:76px;background:linear-gradient(#f8e79b,#e34d8d 48%,#542c91);border-color:#fff0bb;box-shadow:0 0 12px #d75cff66}.ultimate-meter{width:120px;max-width:28vw;height:8px;background:#251638;border:1px solid #dcaaff;border-radius:9px;overflow:hidden}.ultimate-meter>div{height:100%;width:0;background:linear-gradient(90deg,#6be9ff,#b68aff,#fff0a0);box-shadow:0 0 10px #d88aff;transition:width .12s}
+.help{color:#aeb5d0;font-size:12px;line-height:1.5;margin:10px 2px}.help b{color:#e8d69e}.bossbar{transition:opacity .18s}.shell.cinematic .hud,.shell.cinematic .bossbar{opacity:0}.shell.cinematic .controls{opacity:.08;pointer-events:none}.shell.cinematic .controls *{pointer-events:none!important}.shell.cinematic .fullscreen-btn{opacity:0}
+@media(min-width:700px){.joystick{width:124px;height:124px}.controls{max-width:800px;margin-left:auto}.controls button{min-width:58px;min-height:58px}}@media(max-width:600px){body{padding:5px}.shell{width:100%}header{margin-bottom:5px}.pill{display:none}.dialog{padding:12px}.controls{gap:5px;padding-top:7px}.move,.actions{gap:5px}.joystick{width:94px;height:94px;flex-shrink:0}.joy-knob{width:38px;height:38px}.controls button{min-width:42px;min-height:46px;padding:4px}.controls button em{font-size:8px}.hudgroup{font-size:10px}.health{height:10px;width:110px}.help{font-size:10px}}@media (orientation:landscape) and (max-height:600px){body{padding:0;overflow:hidden}.shell{width:100vw;height:100dvh;max-width:none;position:relative}header{display:none}.gamebox{position:absolute;inset:0;width:100vw;height:100dvh;border:0;border-radius:0;box-shadow:none}canvas{width:100%;height:100%;max-height:none;aspect-ratio:auto;object-fit:contain}.fullscreen-btn{display:none}.controls{position:fixed;z-index:9;left:0;right:0;bottom:0;display:flex;justify-content:space-between;padding:4px 9px max(5px,env(safe-area-inset-bottom));gap:5px;pointer-events:none}.controls .move,.controls .actions{gap:5px;pointer-events:auto}.joystick{width:clamp(76px,15vh,104px);height:clamp(76px,15vh,104px)}.joy-knob{width:clamp(32px,6vh,42px);height:clamp(32px,6vh,42px)}.controls button{min-width:clamp(38px,7vh,54px);min-height:clamp(38px,9vh,54px);font-size:16px}.controls button em{font-size:8px}.help{display:none}.hud{top:5px;left:7px;right:7px}.hudgroup{font-size:10px}.overlay{padding:6px}.dialog{padding:8px 14px;max-width:70vw}.dialog h2{font-size:20px}.dialog p{font-size:11px;margin:5px 0}.dialog p:last-child{display:none}.shell.cinematic .controls{opacity:.06;pointer-events:none}.shell.cinematic .controls *{pointer-events:none!important}.shell.cinematic .hud,.shell.cinematic .bossbar{opacity:0}}
+
+#cinema3d{position:absolute;inset:0;z-index:20;background:#03020d;display:none;overflow:hidden}#cinema3d.active{display:block}#cinema3d canvas{width:100%;height:100%;aspect-ratio:auto;display:block}#cinema3d .cinema-caption{position:absolute;left:0;right:0;bottom:8%;text-align:center;color:#f4eaff;font-weight:900;letter-spacing:.18em;text-shadow:0 0 20px #a14dff,0 2px 4px #000;font-size:clamp(13px,2.4vw,25px);pointer-events:none}#cinema3d .cinema-close{position:absolute;right:12px;top:12px;border:1px solid #d8baff;background:#130c28dd;color:white;border-radius:20px;padding:8px 12px;z-index:2}
+
+@media (orientation:portrait) and (max-width:900px){body:after{content:"↻ GIRE O CELULAR PARA JOGAR NA HORIZONTAL";position:fixed;left:50%;bottom:12px;transform:translateX(-50%);z-index:30;max-width:92vw;padding:9px 13px;border:1px solid #b8a5ff;border-radius:999px;background:#100d24ed;color:#f5eaff;font-size:11px;font-weight:900;letter-spacing:.04em;text-align:center;box-shadow:0 0 18px #9c73ff44;pointer-events:none}}
+
+/* Layout inspirado no controle físico enviado: gatilhos R1/R2 no alto e botões de ação em losango */
+@media (orientation:landscape) and (max-height:600px){
+ .controls .shoulder-r1,.controls .magic{
+   position:fixed;top:7px;z-index:12;min-width:clamp(48px,9vh,68px);min-height:clamp(30px,6vh,42px);
+   border-radius:12px 12px 8px 8px;font-size:14px;box-shadow:inset 0 2px 5px #ffffff22,0 3px #050711;
+ }
+ .controls .shoulder-r1{right:calc(9px + clamp(52px,10vh,72px) + 7px)}
+ .controls .magic{right:9px}
+ .controls .shoulder-r1 em,.controls .magic em{font-size:8px}
+ .controls .actions{display:grid;grid-template-columns:repeat(3,clamp(40px,7.5vh,54px));grid-template-rows:repeat(3,clamp(40px,7.5vh,54px));gap:3px;align-items:center;justify-items:center;margin-right:2px}
+ .controls .actions button{min-width:clamp(40px,7.5vh,54px);min-height:clamp(40px,7.5vh,54px);padding:2px}
+ .controls .actions .ultimate{grid-column:2;grid-row:1}
+ .controls .actions .jump{grid-column:1;grid-row:2}
+ .controls .actions .attack{grid-column:2;grid-row:2}
+ .controls .actions .potion{grid-column:3;grid-row:2}
+ .controls .actions .shoulder-r1,.controls .actions .magic{position:fixed;top:7px;opacity:1;pointer-events:auto;left:auto}
+}
+
+
+
+
+/* MAIN MENU — Reino Sombrio */
+.gamebox:has(.menu-screen){border-color:#8f1e32;background:#05050b}
+.overlay.menu-screen{align-items:center;justify-content:center;padding:clamp(12px,3vw,32px);background:linear-gradient(90deg,rgba(2,3,10,.38),rgba(2,3,10,.68)),url("data:image/webp;base64,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") center/cover no-repeat;backdrop-filter:none;}
+.menu-screen .dialog{max-width:560px;width:min(92%,560px);padding:clamp(16px,3vw,30px);background:linear-gradient(145deg,rgba(8,8,17,.91),rgba(5,5,12,.95));border:1px solid #a62b42;border-radius:8px;box-shadow:0 0 28px #c21f3838,inset 0 0 22px #b5213217;}
+.menu-screen .dialog h2{font-family:Georgia,serif;font-size:clamp(34px,6vw,58px);line-height:1.02;letter-spacing:.045em;color:#f3e6e4;text-shadow:0 2px #5a101c,0 0 22px #e22b48;}
+.menu-screen .dialog p{font-size:clamp(12px,1.8vw,15px);color:#d6cbd0;margin:8px auto 14px;max-width:430px;}
+.menu-screen .menu-buttons{display:flex;flex-direction:column;gap:10px;margin:16px auto 0;max-width:420px;}
+.menu-screen .menu-buttons button{width:100%;min-height:52px;border-radius:4px;border:1px solid #c03c50;background:linear-gradient(180deg,#26131c,#0d0a12);font-family:Georgia,serif;font-size:clamp(17px,2.8vw,23px);letter-spacing:.08em;color:#fff0ef;box-shadow:0 0 14px #a61f3533;}
+.menu-screen .menu-buttons .primary{background:linear-gradient(180deg,#651e2b,#230c15);border-color:#ff7884;color:#fff4f0;}
+.menu-screen .menu-buttons button:active{transform:translateY(2px)}
+.menu-screen .dialog>p:last-child{display:none}
+
+.menu-credits{position:absolute;right:clamp(12px,3vw,34px);bottom:clamp(10px,2.5vw,26px);text-align:right;color:#f0e5e5;font-family:Georgia,serif;text-shadow:0 0 12px #000,0 0 10px #d21c3b;pointer-events:none;}
+.menu-credits span{display:block;font-size:clamp(13px,1.9vw,18px);}
+.menu-credits strong{display:block;color:#ff5369;font-size:clamp(23px,3.4vw,34px);letter-spacing:.03em;}
+#previewUltimateBtn{display:none!important}
+@media(max-width:600px){.menu-screen .dialog{width:94%;padding:16px 12px}.menu-screen .dialog h2{font-size:clamp(30px,9vw,44px)}.menu-screen .menu-buttons button{min-height:46px}.menu-credits strong{font-size:23px}}
+
+
+.story-cutscene{position:fixed;inset:0;z-index:1000;background:#03040b;color:#f3edf5;display:flex;flex-direction:column;padding:clamp(10px,3vw,34px);font-family:inherit}
+.story-frame{position:relative;flex:1;min-height:0;overflow:hidden;border:2px solid #49384f;background:linear-gradient(#090b19,#17101d 65%,#080911);display:flex;flex-direction:column;justify-content:flex-end;box-shadow:0 0 45px #a31d4540}
+.story-art{position:absolute;inset:0;background:radial-gradient(ellipse at 70% 25%,#692a49 0,transparent 35%),linear-gradient(#080b1c,#191322 70%,#080910);overflow:hidden}
+.story-art:before{content:"";position:absolute;left:0;right:0;bottom:0;height:30%;background:repeating-linear-gradient(90deg,#181722 0 70px,#25202b 71px 74px);border-top:5px solid #45303e}
+.story-art:after{content:"";position:absolute;width:32%;height:45%;left:34%;bottom:20%;background:linear-gradient(90deg,#14131f,#35303c,#11121b);clip-path:polygon(0 100%,0 28%,18% 28%,18% 12%,32% 12%,32% 0,68% 0,68% 12%,82% 12%,82% 28%,100% 28%,100% 100%);filter:drop-shadow(0 0 12px #000)}
+.story-art.dinner:before{height:24%;background:linear-gradient(0deg,#17111b,#30202b);border-top:5px solid #74503e}
+.story-art.dinner:after{left:15%;bottom:22%;width:70%;height:18%;clip-path:polygon(0 0,100% 0,92% 35%,8% 35%);background:#754c3b;box-shadow:0 20px 0 #221621}
+.story-art.training{background:radial-gradient(ellipse at 50% 42%,#4b2935 0,transparent 36%),linear-gradient(#0a0b18,#21111b 75%,#080910)}
+.story-art.training:after{left:62%;bottom:24%;width:12%;height:40%;background:#4a2b25;clip-path:polygon(35% 0,65% 0,65% 15%,100% 25%,100% 75%,65% 85%,65% 100%,35% 100%,35% 85%,0 75%,0 25%,35% 15%)}
+.story-art.hero{background:radial-gradient(ellipse at 50% 35%,#842b43 0,transparent 35%),linear-gradient(#080a18,#1b111f 70%,#080910)}
+.story-art.hero:after{left:40%;bottom:8%;width:20%;height:72%;background:linear-gradient(90deg,#171824,#a7a9b7 25%,#343344 45%,#c4c8d5 55%,#171824);clip-path:polygon(40% 0,60% 0,70% 10%,68% 27%,85% 42%,100% 100%,0 100%,15% 42%,32% 27%,30% 10%);filter:drop-shadow(0 0 18px #d9d7ff55)}
+.story-copy{position:relative;z-index:2;padding:clamp(18px,4vw,44px);background:linear-gradient(transparent,#05050bed 28%);text-align:center;text-shadow:0 2px 5px #000}
+.story-kicker{color:#ff8294;letter-spacing:.24em;font-size:clamp(10px,1.5vw,15px);font-weight:800}.story-copy h2{font-size:clamp(24px,5vw,52px);margin:8px 0;color:#fff;letter-spacing:.04em}.story-copy p{font-size:clamp(14px,2.2vw,23px);line-height:1.45;max-width:900px;margin:0 auto;color:#e2dbe6}
+.story-bottom{display:flex;align-items:center;justify-content:space-between;padding-top:12px;color:#b8aebe;font-size:12px;letter-spacing:.1em}.story-bottom button{padding:12px 22px;touch-action:manipulation;user-select:none;-webkit-tap-highlight-color:transparent;transition:transform .08s ease,filter .08s ease,box-shadow .08s ease;will-change:transform}.story-bottom button:active{transform:scale(.96);filter:brightness(1.25);box-shadow:0 0 22px #ff829466}.story-frame{contain:layout paint}.story-frame.scene-changing{animation:storySceneIn .18s ease-out}@keyframes storySceneIn{from{opacity:.72;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:600px){.story-art:after{bottom:27%;height:35%}.story-copy{padding:16px 10px}.story-bottom button{padding:10px 14px}}
+
+</style>
+</head>
+<body><main class="shell">
+<header><div><h1>⚔ REINO SOMBRIO</h1><p>A Lenda do Cavaleiro · Edição Suprema Cinematográfica</p></div><div class="pill">50 mundos · 50 chefes · armas lendárias</div></header>
+<div class="gamebox"><div id="cinema3d" aria-label="Ultimate cinematográfica em 3D"><button class="cinema-close" id="closeCinema3d">✕ VOLTAR AO JOGO</button><div class="cinema-caption" id="cinemaCaption">O PODER DO ABISMO</div></div><canvas id="game" width="1920" height="1080" aria-label="Jogo Reino Sombrio"></canvas><button id="fullscreenBtn" class="fullscreen-btn" aria-label="Ativar tela cheia" title="Tela cheia / modo paisagem">⛶ TELA CHEIA</button>
+<div class="hud"><div class="hudgroup"><span id="levelLabel">FASE 1 · BOSQUE ESQUECIDO</span><div class="health"><div id="hpFill"></div></div><span id="hpText">VIDA 100/100</span></div><div class="hudgroup" style="text-align:right"><span id="scoreText">ALMAS: 0</span><span id="potions">POÇÕES: 2</span><span>ULTIMATE <b id="ultText">0%</b></span><div class="ultimate-meter"><div id="ultFill"></div></div></div></div>
+<div class="bossbar" id="bossbar"><span id="bossName">GUARDIÃO</span><div class="health"><div id="bossFill" style="background:linear-gradient(90deg,#b73d6c,#f69aa2)"></div></div></div>
+<div class="overlay menu-screen" id="overlay"><div class="dialog"><h2 id="dialogTitle">REINO SOMBRIO</h2><p id="dialogText">Uma lenda sombria começa. Escolha seu caminho.</p><div class="menu-buttons"><button class="primary" id="startBtn">MODO HISTÓRIA</button><button id="freeBattleBtn">FREE BATTLE</button></div><button id="previewUltimateBtn" style="margin:8px 0 0;background:linear-gradient(135deg,#5126a1,#171b3e);border-color:#d5a6ff;box-shadow:0 0 18px #9c4dff55">✦ TESTAR CUTSCENE 3D DA ULTIMATE</button><p style="font-size:11px;margin-bottom:0">Mover: A/D ou ←/→ · Pular: W/↑/Espaço · Atacar: J · Magia: L · Ultimate: U · Trocar arma: I · Poção: K</p></div><div class="menu-credits"><span>Créditos</span><strong>Casual Ink</strong></div></div>
+</div>
+<div id="storyCutscene" class="story-cutscene" style="display:none" aria-live="polite">
+  <div class="story-frame" id="storyFrame">
+    <div class="story-art" id="storyArt"></div>
+    <div class="story-copy"><div class="story-kicker" id="storyKicker">PRÓLOGO</div><h2 id="storyHeading">HÁ ANOS ATRÁS...</h2><p id="storyText">Antes de o reino cair nas sombras, havia paz no castelo.</p></div>
+  </div>
+  <div class="story-bottom"><span id="storyCount">CENA 1 / 4</span><button id="storyNext" class="primary">CONTINUAR ▶</button></div>
+</div>
+<div class="controls"><div class="move"><div class="joystick" id="joystick" role="application" aria-label="Controle analógico para movimentar o Knight"><div class="joy-knob" id="joyKnob"></div><span class="joy-label">MOVER</span></div></div><div class="actions"><button data-tap="jump" class="jump" aria-label="Pular">✕<em>PULO</em></button><button class="attack" data-hold="attack" aria-label="Atacar">○<em>ATACAR</em></button><button class="shoulder-r1" data-tap="weapon" title="R1: Trocar arma">R1<em>ARMA</em></button><button class="magic" data-tap="magic" title="R2: Magia">R2<em>MAGIA</em></button><button class="ultimate" data-tap="ultimate" title="Triângulo: Ultimate">△<em>ULTIMATE</em></button><button data-tap="potion" class="potion" title="Quadrado: Poção">□<em>POÇÃO</em></button></div></div>
+<p class="help"><b>Dica:</b> gráficos em ULTRA HD interno, luzes mágicas, cenários em camadas e ultimate cinematográfica. Derrote o guardião para abrir o portal. No celular, vire a tela para jogar deitado. Use o analógico à esquerda e os botões de ação à direita; no Free Battle, mova o analógico para cima/baixo para atravessar a profundidade da arena.</p>
+</main>
+<script>
+(()=>{
+const c=document.getElementById('game');
+const $=id=>document.getElementById(id);
+const W=960,H=540,ground=452,RENDER_SCALE=(window.innerWidth<900||(navigator.deviceMemory||4)<=4)?1:1.5;
+// Adaptive internal resolution: lower GPU load on phones while keeping the same game coordinates.
+c.width=Math.round(W*RENDER_SCALE);c.height=Math.round(H*RENDER_SCALE);
+const ctx=c.getContext('2d',{alpha:false,desynchronized:true});
+ctx.setTransform(RENDER_SCALE,0,0,RENDER_SCALE,0,0);ctx.imageSmoothingEnabled=true;
+let state='menu',level=0,score=0,keys={},frame=0,camera=0,particles=[],enemies=[],boss=null,bossDefeated=false,platforms=[],exitX=0,spells=[],ultAnim=null,screenFlash=0,screenShake=0,bossesDefeatedCount=0,secretUnlocked=false,weaponIndex=0,supremeRay=null,freeBattleMode=false;
+const stages=[
+ {name:'BOSQUE ESQUECIDO',sky:['#111b39','#5b3f70'],ground:'#253b3c',length:2400,enemy:'slime',boss:'O GUARDIÃO MUSGOSO'},
+ {name:'RUÍNAS DA LUA',sky:['#10172d','#75445b'],ground:'#3a303f',length:2495,enemy:'skeleton',boss:'CAVALEIRO CAÍDO'},
+ {name:'CASTELO DO ABISMO',sky:['#170f2b','#8a2f52'],ground:'#34253c',length:2590,enemy:'wraith',boss:'REI DAS SOMBRAS'},
+ {name:'CAVERNAS DE CRISTAL',sky:['#071e30','#247b91'],ground:'#203b50',length:2685,enemy:'wraith',boss:'A HIDRA CRISTALINA'},
+ {name:'DESERTO AMALDIÇOADO',sky:['#321a2a','#b7654b'],ground:'#594039',length:2780,enemy:'skeleton',boss:'O FARAÓ SEM ROSTO'},
+ {name:'TRONO DO VAZIO',sky:['#090713','#63308b'],ground:'#281d3d',length:2875,enemy:'wraith',boss:'O DEVORADOR DE MUNDOS'},
+ {name:'CEMITÉRIO DAS ESTRELAS',sky:['#11182f','#48527c'],ground:'#292d43',length:2970,enemy:'skeleton',boss:'O ASTRÔNOMO SEPULTO'},
+ {name:'FORJA INFERNAL',sky:['#290b13','#a93628'],ground:'#482329',length:3065,enemy:'slime',boss:'O COLOSSO DE BRASA'},
+ {name:'MAR DA NÉVOA',sky:['#071c2b','#286b83'],ground:'#1c3848',length:3160,enemy:'wraith',boss:'O LEVIATÃ NEBULOSO'},
+ {name:'JARDIM DO TEMPO',sky:['#17281f','#7c8b4b'],ground:'#30432e',length:3255,enemy:'skeleton',boss:'O CRONARCA'},
+ {name:'PÂNTANO DAS LÁGRIMAS',sky:['#071e27','#34665a'],ground:'#243d35',length:3350,enemy:'slime',boss:'A BRUXA DO LODO'},
+ {name:'CIDADE SUBMERSA',sky:['#061a33','#23728a'],ground:'#1d3d53',length:3445,enemy:'wraith',boss:'A RAINHA DAS MARÉS'},
+ {name:'PICOS CONGELADOS',sky:['#101e3b','#84b8d1'],ground:'#526c84',length:3540,enemy:'skeleton',boss:'O TITÃ DE GELO'},
+ {name:'REINO DOS ESPELHOS',sky:['#25112f','#a34f8b'],ground:'#46304d',length:3635,enemy:'wraith',boss:'A DUPLICADORA'},
+ {name:'ABISMO ETERNO · MUNDO SECRETO',sky:['#03030d','#34205e'],ground:'#211a39',length:3730,enemy:'wraith',boss:'O VAZIO SUPREMO'},
+ {name:'FLORESTA DAS ALMAS',sky:['#08251f','#43a58b'],ground:'#25463c',length:3825,enemy:'slime',boss:'O TREANT ANCESTRAL'},
+ {name:'CATEDRAL PARTIDA',sky:['#17152c','#7d6db8'],ground:'#39334c',length:3920,enemy:'skeleton',boss:'O BISPO SEM ROSTO'},
+ {name:'VALE DOS DRAGÕES',sky:['#32151c','#c75c49'],ground:'#53303a',length:4015,enemy:'wraith',boss:'A SERPENTE RUBRA'},
+ {name:'OBSERVATÓRIO CELESTE',sky:['#101d3b','#7aa8e8'],ground:'#293d5a',length:4110,enemy:'skeleton',boss:'O ORÁCULO ESTELAR'},
+ {name:'MINAS DO ÉTER',sky:['#10272e','#52b5bd'],ground:'#28434a',length:4205,enemy:'slime',boss:'O GOLEM DE ÉTER'},
+ {name:'LAGO DO ESQUECIMENTO',sky:['#101c31','#618cbb'],ground:'#26384a',length:4300,enemy:'wraith',boss:'A DAMA DAS ÁGUAS'},
+ {name:'PLANÍCIE DOS TITÃS',sky:['#292018','#b58a58'],ground:'#514234',length:4395,enemy:'skeleton',boss:'O TITÃ DESPERTADO'},
+ {name:'TORRE DOS MIL ECOS',sky:['#24172e','#a16dbb'],ground:'#423047',length:4490,enemy:'wraith',boss:'O ECO PRIMORDIAL'},
+ {name:'VAZIO RUBRO',sky:['#2d0718','#bd315f'],ground:'#4b1b32',length:4585,enemy:'slime',boss:'O CARRASCO RUBRO'},
+ {name:'ARQUIPÉLAGO FLUTUANTE',sky:['#09253c','#65c7e8'],ground:'#285064',length:4680,enemy:'wraith',boss:'A IMPERATRIZ DOS CÉUS'},
+ {name:'LABIRINTO DO DESTINO',sky:['#1d1634','#7862a9'],ground:'#39304f',length:4775,enemy:'skeleton',boss:'O TECELÃO'},
+ {name:'CORAÇÃO DA TEMPESTADE',sky:['#0b2035','#579de0'],ground:'#263d56',length:4870,enemy:'wraith',boss:'O SENHOR DOS RAIOS'},
+ {name:'PALÁCIO DA NOITE ETERNA',sky:['#170b29','#8b4db0'],ground:'#32223f',length:4965,enemy:'skeleton',boss:'A RAINHA NOTURNA'},
+ {name:'PORTÃO ENTRE MUNDOS',sky:['#090d24','#6265b8'],ground:'#282d4c',length:5060,enemy:'wraith',boss:'O GUARDIÃO DIMENSIONAL'},
+ {name:'ABISMO ETERNO · TRONO FINAL',sky:['#03030d','#6330a8'],ground:'#211a39',length:5155,enemy:'wraith',boss:'O SOBERANO DO FIM'},
+ {name:'JUNGLE DAS SOMBRAS',sky:['#061b18','#2e7861'],ground:'#203b31',length:5250,enemy:'slime',boss:'A HIDRA VERDE'},
+ {name:'FORTALEZA DO TROVÃO',sky:['#101a32','#567bb7'],ground:'#303d59',length:5345,enemy:'skeleton',boss:'O GENERAL DA TEMPESTADE'},
+ {name:'CRIPTA DOS REIS',sky:['#211425','#79516b'],ground:'#3e2c40',length:5440,enemy:'wraith',boss:'O REI SEPULTADO'},
+ {name:'VALE DE OBSIDIANA',sky:['#17131f','#61516e'],ground:'#302a3b',length:5535,enemy:'skeleton',boss:'A SENTINELA NEGRA'},
+ {name:'COSTA DAS ALMAS',sky:['#071d31','#3885a0'],ground:'#234353',length:5630,enemy:'wraith',boss:'O KRAKEN ESPIRITUAL'},
+ {name:'TORRE DO SOL NEGRO',sky:['#241421','#a84b55'],ground:'#4a2c36',length:5725,enemy:'skeleton',boss:'O ARAUTO ECLIPSADO'},
+ {name:'LABORATÓRIO ARCANO',sky:['#0e2630','#4ba5a1'],ground:'#263f45',length:5820,enemy:'slime',boss:'A QUIMERA DE ÉTER'},
+ {name:'PLANÍCIE DE CINZAS',sky:['#251b1b','#a06c57'],ground:'#493331',length:5915,enemy:'skeleton',boss:'O COLOSSO CINZENTO'},
+ {name:'BIBLIOTECA PROIBIDA',sky:['#20182b','#8665a5'],ground:'#393047',length:6010,enemy:'wraith',boss:'O ARQUIVISTA IMORTAL'},
+ {name:'CÉU PARTIDO',sky:['#10213d','#709dd2'],ground:'#304660',length:6105,enemy:'wraith',boss:'O DRAGÃO DAS NUVENS'},
+ {name:'CATACUMBAS RUBRAS',sky:['#2b0c1b','#b43c58'],ground:'#4a2033',length:6200,enemy:'skeleton',boss:'A MATRIARCA RUBRA'},
+ {name:'FORNALHA DO DESTINO',sky:['#2b100b','#c65a31'],ground:'#51291d',length:6295,enemy:'slime',boss:'O DEVORADOR DE BRASA'},
+ {name:'TEMPLO DOS MIL OLHOS',sky:['#19182d','#7770b5'],ground:'#36334c',length:6390,enemy:'wraith',boss:'O VIGIA ABSOLUTO'},
+ {name:'GELEIRA FANTASMA',sky:['#0d2036','#8cc9e8'],ground:'#405c70',length:6485,enemy:'skeleton',boss:'A IMPERATRIZ DO GELO'},
+ {name:'REINO DAS RAÍZES',sky:['#09251a','#52905c'],ground:'#2a4630',length:6580,enemy:'slime',boss:'O CORAÇÃO DA FLORESTA'},
+ {name:'CIDADE DOS RELÓGIOS',sky:['#1d2030','#9b8b69'],ground:'#41404a',length:6675,enemy:'skeleton',boss:'O MESTRE DAS HORAS'},
+ {name:'FRONTEIRA DO NADA',sky:['#100c20','#64428c'],ground:'#2c2140',length:6770,enemy:'wraith',boss:'O PEREGRINO DO VAZIO'},
+ {name:'PORTAL DAS DIMENSÕES',sky:['#0a1830','#4f91b8'],ground:'#293d53',length:6865,enemy:'wraith',boss:'A FENDA VIVA'},
+ {name:'TRONO DO REI SOMBRIO',sky:['#03030d','#8b35c2'],ground:'#211a39',length:6960,enemy:'wraith',boss:'O REI SOMBRIO SUPREMO'},
+ {name:'A ÚLTIMA CHAMA · ABISMO ETERNO',sky:['#02020a','#a75cff'],ground:'#21122f',length:7055,enemy:'wraith',boss:'O VAZIO SUPREMO'}
+];
+const WORLD_ACCENTS=['#8be9cf','#c6a3ff','#ff659e','#68efff','#ffc16c','#b47aff','#9aaeff','#ff7654','#68d9e8','#c5e58a','#8ae6a0','#65dff5','#c4edff','#ff9de9','#d5a2ff'];
+const weapons=[{name:'LÂMINA CELESTIAL',range:48,damage:1,color:'#ffe6a0'},{name:'LANÇA GLACIAL',range:76,damage:1,color:'#7ceeff'},{name:'FOICE DO ABISMO',range:60,damage:2,color:'#dc8bff'}];
+const player={x:70,y:ground-54,w:34,h:54,vx:0,vy:0,hp:100,maxHp:100,face:1,onGround:false,atk:0,inv:0,potions:2,walk:0,magicCooldown:0,ultCharge:0,transform:0,depth:0};
+function resetLevel(){camera=0;player.x=65;player.y=ground-player.h;player.vx=player.vy=0;player.onGround=true;player.atk=0;player.inv=55;platforms=[];particles=[];enemies=[];spells=[];boss=null;
+ let len=stages[level].length;for(let x=340;x<len-240;x+=260+Math.random()*110){platforms.push({x,y:ground-(70+Math.random()*70),w:90+Math.random()*65,h:16});if(Math.random()>.18)enemies.push({x:x+80,y:ground-36,w:32,h:36,hp:2+Math.floor(level/10),max:2+Math.floor(level/10),vx:0,face:-1,hit:0,kind:stages[level].enemy,baseX:x+80,range:75});}
+ exitX=len-95;
+}
+function start(){freeBattleMode=false;state='playing';$('overlay').style.display='none';level=0;score=0;bossDefeated=false;bossesDefeatedCount=0;secretUnlocked=false;weaponIndex=0;player.hp=100;player.potions=2;player.ultCharge=0;player.transform=0;ultAnim=null;screenFlash=0;screenShake=0;document.querySelector('.shell').classList.remove('cinematic');c.style.imageRendering='auto';resetLevel();updateHud();}
+const storyScenes=[
+ {k:'PRÓLOGO',h:'HÁ ANOS ATRÁS...',t:'Antes de o reino cair nas sombras, o Cavaleiro e a princesa — sua grande amiga — compartilhavam uma noite tranquila no castelo.',art:'castle'},
+ {k:'A NOITE DA CAPTURA',h:'A PAZ FOI DESTRUÍDA',t:'Enquanto jantavam na sala real, dois dos últimos grandes chefes invadiram o salão. Eles vieram capturar a princesa. O Cavaleiro tentou reagir, mas os invasores desapareceram com ela na escuridão.',art:'dinner'},
+ {k:'O TREINAMENTO',h:'ELE TREINOU. E TREINOU.',t:'Tomado pela determinação, o Cavaleiro treinou sem descanso. Dia após dia, golpeou o saco de treino e fortaleceu corpo, mente e espada, preparando-se para enfrentar os monstros mais poderosos do reino.',art:'training'},
+ {k:'TRÊS ANOS DEPOIS',h:'A JORNADA COMEÇA',t:'Após três anos, o Cavaleiro está pronto. Com a espada presa às costas, ele parte para resgatar a princesa e enfrentar os responsáveis pela queda do reino.',art:'hero'}
+];let storyIndex=0;
+function showStoryScene(){const sc=storyScenes[storyIndex];$('storyKicker').textContent=sc.k;$('storyHeading').textContent=sc.h;$('storyText').textContent=sc.t;$('storyArt').className='story-art '+sc.art;$('storyCount').textContent=`CENA ${storyIndex+1} / ${storyScenes.length}`;$('storyNext').textContent=storyIndex===storyScenes.length-1?'COMEÇAR A JORNADA ⚔':'CONTINUAR ▶';const frame=$('storyFrame');frame.classList.remove('scene-changing');void frame.offsetWidth;frame.classList.add('scene-changing');}
+function startStory(){storyIndex=0;$('overlay').style.display='none';$('storyCutscene').style.display='flex';showStoryScene();state='story';}
+// Use pointerdown instead of waiting for click: this feels much more immediate on touchscreens.
+let storyAdvanceLock=false;const advanceStory=()=>{if(state!=='story'||storyAdvanceLock)return;storyAdvanceLock=true;const btn=$('storyNext');btn.disabled=true;if(storyIndex<storyScenes.length-1){storyIndex++;showStoryScene();}else{$('storyCutscene').style.display='none';start();}setTimeout(()=>{storyAdvanceLock=false;btn.disabled=false;},180);};
+$('storyNext').addEventListener('pointerdown',e=>{e.preventDefault();advanceStory();});
+$('storyNext').addEventListener('click',e=>{e.preventDefault();});
+function startFreeBattle(){
+ freeBattleMode=true;c.style.imageRendering='pixelated';state='playing';$('overlay').style.display='none';level=13;score=0;bossDefeated=false;bossesDefeatedCount=0;secretUnlocked=false;weaponIndex=0;player.hp=100;player.potions=2;player.ultCharge=0;player.transform=0;ultAnim=null;screenFlash=0;screenShake=0;document.querySelector('.shell').classList.remove('cinematic');resetLevel();
+ enemies=[];exitX=Infinity;camera=0;player.x=90;player.y=ground-player.h;player.inv=65;
+ const hp=190;boss={x:player.x+260,y:ground-100,w:72,h:100,hp,max:hp,face:-1,hit:0,attack:0,phase:1,depth:0.12};player.depth=0;
+ $('levelLabel').textContent='FREE BATTLE · ARENA DO ABISMO';$('bossName').textContent='IA DE COMBATE';$('bossbar').style.display='block';$('bossFill').style.width='100%';updateHud();
+}
+function nextStage(){if(level<stages.length-1){level++;bossDefeated=false;resetLevel();$('levelLabel').textContent=`MUNDO ${level+1}/50 · ${stages[level].name}`;if(level===49){secretUnlocked=true;showOverlay('ÚLTIMO MUNDO DESBLOQUEADO!','Você atravessou 49 terras e abriu o caminho para o Abismo Eterno. O Vazio Supremo espera no fim da última jornada. Prepare-se para a batalha final!','ENTRAR NO ABISMO');state='paused';}}else{state='win';showOverlay('REINO SALVO!','Você venceu os 50 mundos e derrotou O Vazio Supremo! O Reino Sombrio foi libertado. Almas coletadas: '+score,'JOGAR NOVAMENTE');}}
+function showOverlay(title,text,btn){$('dialogTitle').textContent=title;$('dialogText').textContent=text;$('startBtn').textContent=btn;$('overlay').style.display='flex';}
+$('startBtn').addEventListener('click',()=>{if(state==='menu')startStory();else if(state==='win'&& !freeBattleMode){freeBattleMode=false;$('freeBattleBtn').style.display='';$('dialogTitle').textContent='REINO SOMBRIO';$('dialogText').textContent='Uma lenda sombria começa. Escolha seu caminho.';$('startBtn').textContent='MODO HISTÓRIA';state='menu';$('overlay').style.display='flex';}else if(state==='win'||state==='dead')start();else if(state==='paused'){state='playing';$('overlay').style.display='none';}});
+$('freeBattleBtn').addEventListener('click',startFreeBattle);
+// Demo button: lets players preview the full cinematic ultimate immediately, without charging it in combat.
+$('previewUltimateBtn').addEventListener('click',()=>{launch3DCinema();});
+function updateHud(){$('levelLabel').textContent=`MUNDO ${level+1}/50 · ${stages[level].name}`;$('hpFill').style.width=Math.max(0,player.hp/player.maxHp*100)+'%';$('hpText').textContent=`VIDA ${player.hp}/${player.maxHp}`;$('scoreText').textContent='ALMAS: '+score;$('potions').textContent='POÇÕES: '+player.potions;$('ultFill').style.width=player.ultCharge+'%';$('ultText').textContent=Math.floor(player.ultCharge)+'%';const ub=document.querySelector('[data-tap="ultimate"]');if(ub){ub.style.filter=player.ultCharge>=100?'brightness(1.35)':'saturate(.65)';ub.style.boxShadow=player.ultCharge>=100?'0 0 18px #f6d4ff':'0 0 8px #d75cff44';}}
+function spawnBoss(){if(boss||bossDefeated||player.x<stages[level].length-520)return;const bossHp=level===49?340:20+level*5;boss={x:stages[level].length-290,y:ground-95,w:70,h:95,hp:bossHp,max:bossHp,face:-1,hit:0,attack:0,phase:1};$('bossName').textContent=stages[level].boss;$('bossbar').style.display='block';}
+function hitPlayer(dmg){if(player.inv>0||state!=='playing')return;player.hp=Math.max(0,player.hp-dmg);player.inv=55;screenShake=Math.max(screenShake,7);burst(player.x+player.w/2,player.y+25,'#ff526e',16);if(player.hp<=0){state='dead';showOverlay('FIM DE JOGO','O reino ainda precisa de você. Tente novamente e use as poções com K ou 🧪.','TENTAR DE NOVO');$('bossbar').style.display='none';}updateHud();}
+function burst(x,y,color,n=8){const count=Math.min(n,Math.max(0,220-particles.length));for(let i=0;i<count;i++)particles.push({x,y,vx:(Math.random()-.5)*6,vy:(Math.random()-.8)*6,life:20+Math.random()*18,color,size:2+Math.random()*4});}
+function attack(){if(player.atk<=0&&state==='playing'){player.atk=7;}}
+function switchWeapon(){weaponIndex=(weaponIndex+1)%weapons.length;const b=document.querySelector('[data-tap="weapon"]');if(b)b.textContent=['🗡 LÂMINA','❄ LANÇA','☠ FOICE'][weaponIndex];burst(player.x+player.w/2,player.y+20,weapons[weaponIndex].color,9);}
+function defeatBoss(){if(!boss)return;score+=100+(level===49?2500:0);burst(boss.x+35,boss.y+45,level===49?'#dcaaff':'#ffdb7d',55);boss=null;bossDefeated=true;bossesDefeatedCount++;$('bossbar').style.display='none';player.ultCharge=Math.min(100,player.ultCharge+20);if(freeBattleMode){state='win';freeBattleMode=false;showOverlay('VITÓRIA!','Você derrotou a IA de combate do Free Battle!','VOLTAR AO MENU');$('dialogTitle').textContent='VITÓRIA!';$('dialogText').textContent='Você derrotou a IA de combate do Free Battle!';$('freeBattleBtn').style.display='none';$('menu-credits');}}
+function castMagic(){if(state!=='playing'||player.magicCooldown>0)return;player.magicCooldown=12;spells.push({x:player.x+(player.face===1?player.w:-10),y:player.y+25,vx:player.face*14.5,life:70,face:player.face});burst(player.x+player.w/2,player.y+25,'#8ce8ff',5);}
+function castUltimate(){
+ if(state!=='playing'||player.ultCharge<100||ultAnim)return;
+ player.ultCharge=0;
+ if(bossesDefeatedCount>=3){player.transform=360;burst(player.x+player.w/2,player.y+player.h/2,'#b77aff',50);screenFlash=1;}
+ player.inv=Math.max(player.inv,184);player.vx=0;
+ // 180-frame signature attack: charge-up, dimensional slash, impact, and lingering fragments.
+ ultAnim={t:0,dir:player.face,hit:false,duration:120,cinematic:true};screenFlash=1;screenShake=5;
+ const ux=player.x+player.w/2,uy=player.y+player.h/2;
+ burst(ux,uy,'#d6a0ff',30);
+ for(let i=0;i<42;i++){
+  const a=Math.PI*2*i/72,sp=1.5+Math.random()*6;
+  particles.push({x:ux,y:uy,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:42+Math.random()*55,color:['#8ce8ff','#ffe99a','#d6a0ff','#ffffff'][i%4],size:2+Math.random()*5});
+ }
+ updateHud();
+ // Pausa a simulação durante a cutscene e dispara o raio supremo ao voltar ao jogo.
+ launch3DCinema(()=>{fireSupremeRay();ultAnim=null;updateHud();});
+}
+function fireSupremeRay(){
+ const dir=ultAnim?ultAnim.dir:player.face, ux=player.x+player.w/2, uy=player.y+player.h/2;
+ supremeRay={t:18,dir};screenFlash=1;screenShake=28;
+ for(let i=0;i<15;i++){const x=ux+dir*(i*62+35);burst(x,uy,'#e8fbff',7);burst(x,uy,'#a56bff',4);}
+ for(const e of enemies){if(e.hp>0&&(e.x-ux)*dir>-30&&Math.abs(e.x-ux)<1050){e.hp=0;e.hit=12;score+=10;burst(e.x+e.w/2,e.y+e.h/2,'#e8fbff',24);}}
+ if(boss&&boss.hp>0&&(boss.x-ux)*dir>-50&&Math.abs(boss.x-ux)<1250){const dmg=Math.max(12,Math.ceil(boss.max*.9));boss.hp=Math.max(0,boss.hp-dmg);boss.hit=30;burst(boss.x+boss.w/2,boss.y+boss.h/2,'#fff4a6',45);burst(boss.x+boss.w/2,boss.y+boss.h/2,'#a56bff',32);if(boss.hp<=0)defeatBoss();else $('bossFill').style.width=Math.max(0,boss.hp/boss.max*100)+'%';}
+ updateHud();
+}
+function usePotion(){if(state!=='playing')return;if(player.potions<=0||player.hp>=player.maxHp){const msg=player.potions<=0?'SEM POÇÕES!':'VIDA JÁ ESTÁ CHEIA!';$('potions').textContent=msg;setTimeout(()=>{if(state==='playing')updateHud();},900);return;}player.potions--;const oldHp=player.hp;player.hp=Math.min(player.maxHp,player.hp+40);burst(player.x+player.w/2,player.y+player.h/2,'#70f4a3',24);screenFlash=.25;updateHud();}
+function overlaps(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;}
+function update(){
+ if(state!=='playing')return;frame++;if(ultAnim&&ultAnim.cinematic)return;
+ let left=keys.left,right=keys.right;
+ if(freeBattleMode){if(keys.depthUp)player.depth=Math.max(-1,player.depth-.035);if(keys.depthDown)player.depth=Math.min(1,player.depth+.035);if(boss){boss.depth=boss.depth||0;boss.depth+=Math.sign(player.depth-boss.depth)*Math.min(.018,Math.abs(player.depth-boss.depth)*.06);}}
+ if(player.transform>0)player.transform--;player.vx=(right?(player.transform>0?8.0:6.6):0)-(left?(player.transform>0?8.0:6.6):0);if(player.vx)player.face=Math.sign(player.vx);player.x+=player.vx;if(freeBattleMode)player.x=Math.max(18,Math.min(820,player.x));player.walk+=Math.abs(player.vx)*.23;if(player.onGround&&Math.abs(player.vx)>2&&frame%6===0)particles.push({x:player.x+player.w/2,y:ground-2,vx:-player.face*(.5+Math.random()),vy:-.7-Math.random(),life:14+Math.random()*8,color:level===3?'#80eaff':level>=5?'#be8cff':'#9bb5a0',size:1+Math.random()*2});
+ if(keys.jump&&player.onGround){player.vy=-18.5;player.onGround=false;keys.jump=false;}
+ player.vy+=.92;player.y+=player.vy;player.onGround=false;
+ if(player.y+player.h>=ground){player.y=ground-player.h;player.vy=0;player.onGround=true;}
+ for(const p of platforms){let prevY=player.y-player.vy;if(player.vy>=0&&player.x+player.w>p.x&&player.x<p.x+p.w&&prevY+player.h<=p.y+5&&player.y+player.h>=p.y){player.y=p.y-player.h;player.vy=0;player.onGround=true;}}
+ player.x=Math.max(0,Math.min(stages[level].length-player.w,player.x));
+ if(ultAnim){
+   player.vx=0;ultAnim.t++;
+   // Impact is synchronized with the brightest slash frame.
+   if(ultAnim.t===84&&!ultAnim.hit){
+     ultAnim.hit=true;screenFlash=1;screenShake=32;
+     const ux=player.x+player.w/2,uy=player.y+player.h/2;
+     burst(ux+ultAnim.dir*120,uy,'#fff1a6',90);burst(ux+ultAnim.dir*250,uy,'#9cefff',62);
+     for(const e of enemies){if(e.hp>0&&(e.x-ux)*ultAnim.dir>-70&&Math.abs(e.x-ux)<510){e.hp=0;e.hit=12;score+=10;burst(e.x+e.w/2,e.y+e.h/2,'#c5faff',32);}}
+     if(boss&&boss.hp>0&&(boss.x-ux)*ultAnim.dir>-100&&Math.abs(boss.x-ux)<620){
+       const dmg=Math.max(8,Math.ceil(boss.max*.76));boss.hp=Math.max(0,boss.hp-dmg);boss.hit=24;boss.x+=ultAnim.dir*45;
+       burst(boss.x+boss.w/2,boss.y+boss.h/2,'#fff0a0',68);burst(boss.x+boss.w/2,boss.y+boss.h/2,'#c49bff',36);
+       if(boss.hp<=0)defeatBoss();
+       else $('bossFill').style.width=Math.max(0,boss.hp/boss.max*100)+'%';
+     }
+     updateHud();
+   }
+   if(ultAnim.t>=ultAnim.duration)ultAnim=null;
+ }
+ if(player.atk>0){player.atk--;if(player.atk===4){let wp=weapons[weaponIndex],reach=wp.range;let range={x:player.face===1?player.x+player.w:player.x-reach,y:player.y+7,w:reach,h:38};for(const e of enemies){if(e.hp>0&&overlaps(range,e)){e.hp-=wp.damage+(player.transform>0?1:0);e.hit=10;e.x+=player.face*18;burst(e.x+e.w/2,e.y+15,'#ffd47a',8);if(e.hp<=0){score+=10;burst(e.x+16,e.y+16,'#a5f5e8',15);}player.ultCharge=Math.min(100,player.ultCharge+8);}}if(boss&&boss.hp>0&&overlaps(range,boss)){boss.hp-=wp.damage+(player.transform>0?1:0);boss.hit=10;boss.x+=player.face*10;burst(boss.x+boss.w/2,boss.y+35,'#ff78a5',12);if(boss.hp<=0)defeatBoss();player.ultCharge=Math.min(100,player.ultCharge+14);}}}
+ if(player.inv>0)player.inv--;if(player.magicCooldown>0)player.magicCooldown--;if(screenFlash>0)screenFlash=Math.max(0,screenFlash-.075);if(screenShake>0)screenShake=Math.max(0,screenShake-.65);
+ for(const s of spells){s.x+=s.vx;s.life--;const hitbox={x:s.x-8,y:s.y-8,w:22,h:20};for(const e of enemies){if(e.hp>0&&overlaps(hitbox,e)){e.hp--;e.hit=9;burst(e.x+e.w/2,e.y+16,'#8ce8ff',10);s.life=0;if(e.hp<=0){score+=10;burst(e.x+16,e.y+16,'#a5f5e8',12);}player.ultCharge=Math.min(100,player.ultCharge+5);break;}}if(boss&&boss.hp>0&&overlaps(hitbox,boss)){boss.hp=Math.max(0,boss.hp-2);boss.hit=9;burst(boss.x+boss.w/2,boss.y+35,'#8ce8ff',14);s.life=0;if(boss.hp<=0)defeatBoss();player.ultCharge=Math.min(100,player.ultCharge+12);}}
+ spells=spells.filter(s=>s.life>0&&s.x>-30&&s.x<stages[level].length+30);
+ for(const e of enemies){if(e.hp<=0)continue;if(e.hit>0)e.hit--;let dx=player.x-e.x;if(Math.abs(dx)<250){e.face=dx<0?-1:1;e.x+=e.face*((e.kind==='wraith'?1.65:1.25)+level*.035);}else{e.x+=Math.sin((frame+e.baseX)*.025)*.5;}e.x=Math.max(e.baseX-e.range,Math.min(e.baseX+e.range,e.x));if(overlaps(player,e))hitPlayer(8+Math.floor(level/12));}
+ enemies=enemies.filter(e=>e.hp>0);
+ spawnBoss();
+ if(boss){if(boss.hit>0)boss.hit--;boss.face=player.x<boss.x?-1:1;if(boss.hp<=boss.max*.5&&boss.phase===1){boss.phase=2;boss.attack=0;burst(boss.x+boss.w/2,boss.y+35,level===49?'#e0aaff':'#ff5b91',48);screenFlash=.7;screenShake=Math.max(screenShake,12);$('bossName').textContent=stages[level].boss+' · FASE 2';}boss.x+=boss.face*(Math.abs(player.x-boss.x)<340?((boss.phase===2?1.55:.85)+level*.018):0);boss.attack++;if(boss.attack>(boss.phase===2?Math.max(27,48-Math.floor(level/5)):Math.max(42,76-Math.floor(level/4)))){if(Math.abs(player.x-boss.x)<(boss.phase===2?155:115)){boss.attack=0;hitPlayer((boss.phase===2?19:14)+Math.floor(level/10));burst(player.x+16,player.y+25,'#bb69ff',10);}else if(boss.attack>125)boss.attack=0;}if(overlaps(player,boss))hitPlayer(12);$('bossFill').style.width=Math.max(0,boss.hp/boss.max*100)+'%';}
+ if(!freeBattleMode&&player.x>exitX&&!boss){nextStage();if(state!=='playing')return;}
+ camera=freeBattleMode?0:Math.max(0,Math.min(stages[level].length-W,player.x-W*.34));for(const p of particles){p.x+=p.vx;p.y+=p.vy;p.vy+=.12;p.life--;}particles=particles.filter(p=>p.life>0);if(particles.length>240)particles.splice(0,particles.length-240);updateHud();
+}
+function rect(x,y,w,h,col){ctx.fillStyle=col;ctx.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h));}
+function drawFreeBattleArena(){
+ // Pixel-art 2.5D arena: a perspective fighting stage with a low-poly/pixelated floor.
+ const sky=ctx.createLinearGradient(0,0,0,H);sky.addColorStop(0,'#070711');sky.addColorStop(.48,'#321126');sky.addColorStop(1,'#100c1b');ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
+ // Blood moon and broken gothic skyline
+ ctx.save();ctx.globalAlpha=.9;ctx.fillStyle='#9f233f';ctx.beginPath();ctx.arc(W*.73,H*.19,72,0,Math.PI*2);ctx.fill();ctx.globalAlpha=.18;ctx.fillStyle='#ff526b';ctx.beginPath();ctx.arc(W*.73,H*.19,105,0,Math.PI*2);ctx.fill();ctx.restore();
+ for(let i=0;i<13;i++){let x=i*165-35;let h=105+(i*71%170);ctx.fillStyle=i%2?'#171322':'#211426';ctx.beginPath();ctx.moveTo(x,H*.58);ctx.lineTo(x,H*.58-h);ctx.lineTo(x+22,H*.58-h-28);ctx.lineTo(x+45,H*.58-h);ctx.lineTo(x+45,H*.58);ctx.fill();ctx.fillStyle='#581d36';ctx.fillRect(x+18,H*.58-h+22,4,22);}
+ // Arena platform recedes toward the horizon
+ const horizon=H*.48;ctx.fillStyle='#17111f';ctx.beginPath();ctx.moveTo(W*.40,horizon);ctx.lineTo(W*.60,horizon);ctx.lineTo(W*1.04,H*.96);ctx.lineTo(-W*.04,H*.96);ctx.closePath();ctx.fill();
+ ctx.fillStyle='#302035';ctx.beginPath();ctx.moveTo(W*.40,horizon);ctx.lineTo(W*.60,horizon);ctx.lineTo(W*.97,H*.88);ctx.lineTo(W*.03,H*.88);ctx.closePath();ctx.fill();
+ // Pixelated perspective tiles
+ for(let i=0;i<=10;i++){let t=i/10;let y=horizon+(H*.43)*(t*t);let half=W*(.10+.43*t);ctx.strokeStyle=i%2?'#6d314b':'#a34b62';ctx.globalAlpha=.22+.28*t;ctx.lineWidth= i%3===0?4:2;ctx.beginPath();ctx.moveTo(W/2-half,y);ctx.lineTo(W/2+half,y);ctx.stroke();}
+ for(let i=-7;i<=7;i++){ctx.strokeStyle=i%2?'#74354e':'#b04b65';ctx.globalAlpha=.22;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(W/2+i*15,horizon);ctx.lineTo(W/2+i*90,H*.91);ctx.stroke();}ctx.globalAlpha=1;
+ // Rune-lit boundary stones and chunky pixel sparks
+ for(let side of [-1,1])for(let i=0;i<7;i++){let t=i/6,y=horizon+35+t*H*.39,x=W/2+side*(W*(.105+t*.42));ctx.fillStyle='#201627';ctx.fillRect(Math.round(x-12),Math.round(y-18),24,38);ctx.fillStyle=i%2?'#ff4769':'#d94b78';ctx.fillRect(Math.round(x-3),Math.round(y-12),6,20);ctx.fillStyle='#ffc2d0';ctx.fillRect(Math.round(x-2),Math.round(y-7),2,7);}
+ for(let i=0;i<50;i++){let x=(i*149+frame*(i%3+1))%W,y=(i*83+frame*.45)%H*.65;ctx.globalAlpha=.25+.5*(.5+.5*Math.sin(frame*.08+i));ctx.fillStyle=i%3?'#ff7594':'#c5a4ff';ctx.fillRect(Math.round(x),Math.round(y),i%8===0?4:2,i%8===0?4:2);}ctx.globalAlpha=1;
+ ctx.fillStyle='#f2d8e5';ctx.font='bold 22px monospace';ctx.textAlign='center';ctx.shadowBlur=14;ctx.shadowColor='#ff3b68';ctx.fillText('ABISMO // ARENA DE DUELO',W/2,H*.12);ctx.shadowBlur=0;
+}
+function drawBackground(){
+ if(freeBattleMode){drawFreeBattleArena();return;}
+ const st=stages[level];
+ // Deep dusk sky with layered color
+ let g=ctx.createLinearGradient(0,0,0,H);
+ g.addColorStop(0,st.sky[0]);
+ g.addColorStop(.52,st.sky[1]);g.addColorStop(1,'#20263b');
+ ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+ // stars and drifting motes
+ for(let i=0;i<95;i++){
+   let sx=((i*137-camera*.035)%(W+20)+W+20)%(W+20);
+   let sy=(i*71%215)+14;
+   let tw=.35+(.5+.5*Math.sin(frame*.035+i))*0.65;
+   ctx.globalAlpha=tw;rect(sx,sy, i%7===0?3:1.5, i%7===0?3:1.5, i%5===0?'#f8d9a4':'#d5dafa');
+ }
+ ctx.globalAlpha=1;
+ // moon halo
+ const mx=760-camera*.06,my=98;
+ let halo=ctx.createRadialGradient(mx,my,8,mx,my,105);
+ halo.addColorStop(0,'#d9d4ff55');halo.addColorStop(1,'#d9d4ff00');
+ ctx.fillStyle=halo;ctx.fillRect(mx-110,my-110,220,220);
+ ctx.fillStyle='#e7e1ff';ctx.beginPath();ctx.arc(mx,my,34,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle=level===2?'#21122f':st.sky[0];ctx.beginPath();ctx.arc(mx+13,my-11,30,0,Math.PI*2);ctx.fill();
+ // distant jagged mountain silhouettes
+ for(let layer=0;layer<3;layer++){
+   ctx.fillStyle=['#252744','#1b2037','#151a2d'][layer];
+   ctx.beginPath();ctx.moveTo(0,ground);
+   for(let i=-1;i<9;i++){
+     let x=i*150-((camera*[.10,.17,.25][layer])%150);
+     ctx.lineTo(x,245+layer*45+Math.sin(i*2.3+layer)*28);
+     ctx.lineTo(x+65,150+layer*48+(i%3)*28);
+     ctx.lineTo(x+150,ground);
+   }
+   ctx.lineTo(W,ground);ctx.closePath();ctx.fill();
+ }
+ // silhouettes of broken towers and crooked trees
+ for(let i=0;i<15;i++){
+   let x=((i*116-camera*.38)%(W+170)+W+170)%(W+170)-80;
+   if(level===1 || level===2){
+     rect(x+25,235,32,210,'#171827');rect(x+19,225,44,18,'#29283b');
+     rect(x+30,190,7,45,'#171827');rect(x+44,205,6,30,'#171827');
+     rect(x+33,266,8,23,'#f0a05a');ctx.globalAlpha=.3;rect(x+35,269,4,14,'#ffdca1');ctx.globalAlpha=1;
+     rect(x+10,330,60,8,'#242538');
+   }else{
+     rect(x+28,260,13,190,'#151c2a');
+     ctx.fillStyle=i%2?'#202d39':'#293040';
+     ctx.beginPath();ctx.moveTo(x-15,320);ctx.lineTo(x+32,175+(i%4)*16);ctx.lineTo(x+80,320);ctx.fill();
+     ctx.beginPath();ctx.moveTo(x-5,365);ctx.lineTo(x+32,245);ctx.lineTo(x+73,365);ctx.fill();
+     // sparse violet leaves
+     rect(x+5,294,8,4,'#39404b');
+   }
+ }
+ // Ancient citadel silhouette with towers, arches and tiny banners
+ for(let i=0;i<5;i++){
+   let bx=((i*247-camera*.19)%(W+260)+W+260)%(W+260)-110;
+   let baseY=ground-28-(i%2)*22;
+   ctx.fillStyle=['#17172c','#1b1933','#171c31'][i%3];
+   ctx.beginPath();ctx.moveTo(bx-12,baseY+8);ctx.lineTo(bx-6,baseY-72);ctx.lineTo(bx+5,baseY-94);ctx.lineTo(bx+17,baseY-72);ctx.lineTo(bx+24,baseY+8);ctx.closePath();ctx.fill();
+   rect(bx-17,baseY+2,46,9,'#24213b');rect(bx+1,baseY-51,5,14,level===3?'#63e8ff':'#d7a5ff');
+   rect(bx+8,baseY-105,2,17,'#25203b');
+   ctx.fillStyle=level>=4?'#ed638d':level===3?'#62eaff':'#c8a5ff';ctx.beginPath();ctx.moveTo(bx+10,baseY-103);ctx.lineTo(bx+28,baseY-98);ctx.lineTo(bx+10,baseY-91);ctx.fill();
+ }
+ // Wispy drifting ember particles add depth to the sky
+ for(let i=0;i<34;i++){
+   let ex=((i*83-frame*(.15+(i%3)*.07)-camera*.08)%(W+30)+W+30)%(W+30);
+   let ey=90+(i*47%300)+Math.sin(frame*.025+i)*7;
+   ctx.globalAlpha=.18+.28*(.5+.5*Math.sin(frame*.04+i));
+   rect(ex,ey,i%6===0?3:2,i%6===0?3:2,level===3?'#77efff':level>=4?'#ff79c5':'#c3a3ff');
+ }
+ ctx.globalAlpha=1;
+ // distant glowing windows
+ for(let i=0;i<9;i++){
+   let x=((i*173-camera*.24)%(W+80)+W+80)%(W+80);
+   ctx.globalAlpha=.25+.2*Math.sin(frame*.04+i);
+   rect(x,300+(i%3)*24,4,12,level>=4?'#ff5b9b':level===3?'#71efff':level===2?'#ff5b9b':'#f2c77d');
+ }
+ ctx.globalAlpha=1;
+ // ground layers and textured earth
+ rect(0,ground,W,H-ground,st.ground);
+ rect(0,ground,W,7,WORLD_ACCENTS[level]||'#a05c7a');
+ rect(0,ground+7,W,10,'#1b2431');
+ for(let x=0;x<W;x+=31){
+   let variation=(Math.floor((x+camera)/31)%3);
+   rect(x,ground+18+(variation%2)*8,18,3,level>=4?'#4a2b4a':level===3?'#24596a':'#35404a');
+   rect(x+10,ground+42,10,3,'#18212e');
+   if((Math.floor((x+camera)/31)%4)===0){
+     rect(x+4,ground-5,2,7,'#8ba18a');rect(x+8,ground-3,2,5,'#526f68');
+   }
+ }
+ // rocks and glowing mushrooms in foreground
+ for(let i=0;i<14;i++){
+   let x=((i*91-camera*.8)%(W+100)+W+100)%(W+100)-30;
+   if(i%2===0){ctx.fillStyle='#141b29';ctx.beginPath();ctx.moveTo(x,ground+2);ctx.lineTo(x+13,ground-15);ctx.lineTo(x+29,ground+2);ctx.fill();}
+   else{
+     rect(x+9,ground-8,4,9,'#6e526c');rect(x+3,ground-12,16,5,level>=4?'#e56ca4':level===3?'#70eaff':'#79d6b5');
+     ctx.globalAlpha=.18;ctx.fillStyle=level>=4?'#ed5caa':level===3?'#66dfff':'#66f0d2';ctx.beginPath();ctx.arc(x+11,ground-10,19,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
+   }
+ }
+ // Foreground silhouette framing the scene, with hanging roots and crystal clusters
+ for(let i=0;i<11;i++){
+   let fx=((i*103-camera*.92)%(W+120)+W+120)%(W+120)-35;
+   if(i%3===0){
+     rect(fx,ground-3,7,20,'#111522');rect(fx-5,ground+7,18,5,'#111522');
+     rect(fx+2,ground+17,3,12,'#111522');
+   } else if(level===3 || i%4===0){
+     ctx.fillStyle=level===3?'#3b9cae':'#6a397e';ctx.beginPath();ctx.moveTo(fx,ground+1);ctx.lineTo(fx+7,ground-29-(i%3)*8);ctx.lineTo(fx+13,ground+1);ctx.fill();
+     ctx.globalAlpha=.22;ctx.fillStyle=level===3?'#6cf3ff':'#c36dff';ctx.beginPath();ctx.arc(fx+7,ground-13,17,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
+   } else {
+     // twisted root-like grass tufts
+     ctx.strokeStyle='#0e1723';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(fx,ground+2);ctx.lineTo(fx-5,ground-13);ctx.lineTo(fx+2,ground-20);ctx.moveTo(fx+7,ground+2);ctx.lineTo(fx+12,ground-11);ctx.stroke();
+   }
+ }
+ // atmospheric fog bands
+ for(let i=0;i<4;i++){
+   let fx=((i*300-frame*.35-camera*.12)%(W+340)+W+340)%(W+340)-170;
+   ctx.globalAlpha=.055+(i%2)*.025;
+   ctx.fillStyle=level>=4?'#dc78ba':level===3?'#68eaff':'#a5c4d9';
+   ctx.beginPath();ctx.ellipse(fx,ground-32-i*17,150,13,0,0,Math.PI*2);ctx.fill();
+ }
+ ctx.globalAlpha=1;
+ // floating platforms with layered stone edges
+ for(const p of platforms){
+   let x=p.x-camera;
+   if(x>-180&&x<W+180){
+     rect(x-3,p.y+5,p.w+6,p.h+3,'#171b2c');
+     rect(x,p.y,p.w,p.h,'#41465c');rect(x,p.y,p.w,5,'#b4a2bd');
+     rect(x+4,p.y+6,p.w-8,3,'#68647a');
+     for(let xx=x+10;xx<x+p.w-5;xx+=24){rect(xx,p.y+9,9,4,'#252c43');rect(xx+3,p.y+13,3,5,'#252c43');}
+     rect(x+12,p.y-3,18,2,'#d0c4d7');
+     for(let rune=x+22;rune<x+p.w-12;rune+=46){rect(rune,p.y+2,3,2,level===3?'#76edff':level>=4?'#ff79c5':'#c9a6ff');rect(rune+2,p.y+4,2,2,level===3?'#76edff':level>=4?'#ff79c5':'#c9a6ff');}
+   }
+ }
+
+ // CINEMATIC WORLD DETAIL PASS — layered mist, aurora, ruins, runes and animated crystals.
+ // Soft sky ribbons give the worlds depth without hiding the action.
+ ctx.save();
+ const accents=['#8be9cf','#c6a3ff','#ff659e','#68efff','#ffc16c','#b47aff','#9aaeff','#ff7654','#68d9e8','#c5e58a','#8ae6a0','#65dff5','#c4edff','#ff9de9','#d5a2ff'];
+ const accent=accents[level]||'#b47aff';
+ for(let layer=0;layer<3;layer++){
+   ctx.globalAlpha=.045+layer*.018;
+   ctx.fillStyle=layer===1?accent:'#7f8bd8';
+   ctx.beginPath();
+   const yy=105+layer*42+Math.sin(frame*.014+layer)*9;
+   ctx.moveTo(0,yy);
+   for(let xx=0;xx<=W+32;xx+=32)ctx.lineTo(xx,yy+Math.sin(xx*.009+frame*.018+layer*2)*13+Math.sin(xx*.021+layer)*5);
+   ctx.lineTo(W,H*.58);ctx.lineTo(0,H*.58);ctx.closePath();ctx.fill();
+ }
+ // Rays from the moon/sky, deliberately subdued to retain contrast for combat.
+ ctx.globalAlpha=.055;
+ for(let i=0;i<5;i++){
+   let bx=710-camera*.045+i*34+Math.sin(frame*.006+i)*12;
+   ctx.fillStyle=i%2?'#d9c9ff':accent;
+   ctx.beginPath();ctx.moveTo(bx,42);ctx.lineTo(bx+28,42);ctx.lineTo(bx-115,ground-40);ctx.lineTo(bx-145,ground-40);ctx.closePath();ctx.fill();
+ }
+ ctx.restore();
+
+ // Tower arches at the skyline, with luminous stained-glass windows.
+ for(let i=0;i<7;i++){
+   const tx=((i*181-camera*.31)%(W+220)+W+220)%(W+220)-90;
+   const ty=ground-28-(i%3)*18;
+   ctx.save();ctx.globalAlpha=.68;
+   ctx.fillStyle=i%2?'#111426':'#18162c';
+   ctx.beginPath();ctx.moveTo(tx,ty);ctx.lineTo(tx+4,ty-65-(i%3)*12);ctx.lineTo(tx+15,ty-82-(i%2)*12);ctx.lineTo(tx+27,ty-63-(i%3)*12);ctx.lineTo(tx+31,ty);ctx.closePath();ctx.fill();
+   rect(tx-7,ty-3,45,6,'#29233e');
+   ctx.fillStyle=accent;ctx.globalAlpha=.38+.12*Math.sin(frame*.03+i);
+   ctx.beginPath();ctx.moveTo(tx+11,ty-20);ctx.lineTo(tx+15,ty-42);ctx.lineTo(tx+20,ty-20);ctx.closePath();ctx.fill();
+   ctx.globalAlpha=.6;rect(tx+14,ty-15,4,7,'#ffe4a1');ctx.restore();
+ }
+
+ // World-specific environment: each realm has a recognizable visual signature.
+ if(level===0){
+   // Ancient forest canopy and bioluminescent spores.
+   for(let i=0;i<10;i++){
+     let tx=((i*119-camera*.58)%(W+140)+W+140)%(W+140)-60;
+     ctx.fillStyle='#101a25';ctx.beginPath();ctx.moveTo(tx-35,ground-88);ctx.lineTo(tx+4,ground-205-(i%4)*18);ctx.lineTo(tx+28,ground-128);ctx.lineTo(tx+58,ground-195-(i%3)*12);ctx.lineTo(tx+83,ground-82);ctx.closePath();ctx.fill();
+     ctx.strokeStyle='#425f58';ctx.globalAlpha=.55;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(tx+4,ground-154);ctx.lineTo(tx+14,ground-112);ctx.lineTo(tx+31,ground-98);ctx.stroke();ctx.globalAlpha=1;
+   }
+ } else if(level===1 || level===2){
+   // Broken gothic arches and hanging banners.
+   for(let i=0;i<5;i++){
+     let ax=((i*231-camera*.22)%(W+260)+W+260)%(W+260)-100;
+     let ay=ground-13;
+     ctx.save();ctx.globalAlpha=.48;ctx.strokeStyle='#34304c';ctx.lineWidth=10;ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(ax,ay-93);ctx.quadraticCurveTo(ax+45,ay-145,ax+89,ay-93);ctx.lineTo(ax+89,ay);ctx.stroke();
+     ctx.strokeStyle='#716184';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(ax+7,ay-94);ctx.quadraticCurveTo(ax+45,ay-133,ax+82,ay-94);ctx.stroke();
+     ctx.fillStyle=level===2?'#8a315f':'#78629b';ctx.beginPath();ctx.moveTo(ax+42,ay-120);ctx.lineTo(ax+58,ay-111);ctx.lineTo(ax+51,ay-82);ctx.lineTo(ax+43,ay-92);ctx.fill();ctx.restore();
+   }
+ } else if(level===3){
+   // Crystal cavern: large prismatic geodes with cyan inner facets.
+   for(let i=0;i<9;i++){
+     let cx=((i*127-camera*.42)%(W+160)+W+160)%(W+160)-70;
+     let base=ground-18-(i%3)*22,hh=48+(i%4)*15;
+     ctx.save();ctx.globalAlpha=.68;ctx.shadowBlur=12;ctx.shadowColor='#53eaff';ctx.fillStyle=i%2?'#1b7189':'#24536f';
+     ctx.beginPath();ctx.moveTo(cx-16,base);ctx.lineTo(cx-7,base-hh*.72);ctx.lineTo(cx+1,base-hh);ctx.lineTo(cx+15,base-hh*.55);ctx.lineTo(cx+20,base);ctx.closePath();ctx.fill();
+     ctx.shadowBlur=0;ctx.fillStyle='#a7f6ff';ctx.globalAlpha=.52;ctx.beginPath();ctx.moveTo(cx+1,base-hh);ctx.lineTo(cx+7,base-hh*.44);ctx.lineTo(cx+2,base-5);ctx.lineTo(cx-3,base-hh*.65);ctx.closePath();ctx.fill();ctx.restore();
+   }
+ } else if(level===4){
+   // Cursed desert: distant dunes and drifting amber grit.
+   for(let d=0;d<3;d++){
+     ctx.save();ctx.globalAlpha=.15+d*.045;ctx.fillStyle=d===2?'#d88a59':'#7b4b54';ctx.beginPath();ctx.moveTo(0,ground-30+d*17);
+     for(let xx=0;xx<=W+20;xx+=20)ctx.lineTo(xx,ground-44+d*17+Math.sin(xx*.012+frame*.003+d)*19+Math.sin(xx*.026+d)*7);
+     ctx.lineTo(W,ground);ctx.lineTo(0,ground);ctx.closePath();ctx.fill();ctx.restore();
+   }
+   for(let i=0;i<35;i++){
+     let sx=((i*113-frame*(.35+(i%4)*.13)-camera*.11)%(W+30)+W+30)%(W+30),sy=180+(i*61%240);
+     ctx.globalAlpha=.18+.2*Math.sin(frame*.06+i)**2;rect(sx,sy,2+(i%3===0?1:0),2,'#ffd18a');
+   }
+   ctx.globalAlpha=1;
+ } else if(level===6){
+   // Star cemetery: weathered gravestones, crooked crosses and tiny wandering spirits.
+   for(let i=0;i<13;i++){
+     const gx=((i*103-camera*.29)%(W+140)+W+140)%(W+140)-60, gy=ground-12-(i%3)*7;
+     ctx.save();ctx.globalAlpha=.72;ctx.fillStyle=i%2?'#202941':'#343851';ctx.beginPath();ctx.moveTo(gx,gy);ctx.lineTo(gx,gy-22);ctx.quadraticCurveTo(gx+1,gy-32,gx+12,gy-32);ctx.quadraticCurveTo(gx+23,gy-32,gx+23,gy-21);ctx.lineTo(gx+23,gy);ctx.closePath();ctx.fill();
+     rect(gx+10,gy-24,3,11,'#777d9d');rect(gx+6,gy-20,11,3,'#777d9d');rect(gx+6,gy-8,12,2,'#a0a8c5');ctx.restore();
+   }
+   for(let i=0;i<7;i++){const sx=((i*149-frame*.32-camera*.12)%(W+80)+W+80)%(W+80),sy=160+(i*41%175)+Math.sin(frame*.035+i)*13;ctx.save();ctx.globalAlpha=.35+.22*Math.sin(frame*.05+i);ctx.fillStyle='#a9d5ff';ctx.shadowBlur=18;ctx.shadowColor='#88aaff';ctx.beginPath();ctx.arc(sx,sy,5,0,Math.PI*2);ctx.fill();ctx.fillRect(sx-3,sy+3,6,10);ctx.restore();}
+   for(let i=0;i<18;i++){const sx=(i*97)%W, sy=55+(i*43)%150;ctx.globalAlpha=.35+.3*Math.sin(frame*.04+i);rect(sx,sy,2,2,'#e3e9ff');}ctx.globalAlpha=1;
+ } else if(level===7){
+   // Infernal forge: jagged volcanic spires and animated lava fissures.
+   for(let i=0;i<9;i++){const vx=((i*143-camera*.22)%(W+180)+W+180)%(W+180)-70, bh=110+(i%4)*33;ctx.fillStyle='#351922';ctx.beginPath();ctx.moveTo(vx-42,ground);ctx.lineTo(vx-13,ground-bh*.72);ctx.lineTo(vx,ground-bh);ctx.lineTo(vx+11,ground-bh*.79);ctx.lineTo(vx+39,ground);ctx.closePath();ctx.fill();ctx.strokeStyle='#8e302b';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(vx,ground-bh+8);ctx.lineTo(vx-7,ground-bh*.5);ctx.lineTo(vx+5,ground-bh*.33);ctx.stroke();}
+   for(let i=0;i<13;i++){const lx=((i*79-camera*.66)%(W+80)+W+80)%(W+80),ly=ground-4+(i%3)*8;ctx.save();ctx.globalAlpha=.45+.25*Math.sin(frame*.08+i);ctx.strokeStyle=i%2?'#ffb34f':'#ff593c';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(lx+7,ly-12);ctx.lineTo(lx+3,ly-22);ctx.lineTo(lx+14,ly-33);ctx.stroke();ctx.restore();}
+   for(let i=0;i<30;i++){const ex=((i*73-frame*(.5+(i%3)*.12)-camera*.08)%(W+30)+W+30)%(W+30),ey=230+(i*47%220)-Math.sin(frame*.03+i)*12;ctx.globalAlpha=.35+.4*Math.sin(frame*.06+i)**2;rect(ex,ey,2,3,'#ffb45b');}ctx.globalAlpha=1;
+ } else if(level===8){
+   // Mist sea: layered animated waves and the silhouette of a haunted ship.
+   for(let d=0;d<4;d++){ctx.save();ctx.globalAlpha=.12+d*.035;ctx.fillStyle=d%2?'#28647a':'#193d57';ctx.beginPath();ctx.moveTo(0,ground-35+d*22);for(let xx=0;xx<=W+16;xx+=16)ctx.lineTo(xx,ground-49+d*22+Math.sin(xx*.017+frame*.018+d)*10+Math.sin(xx*.035+d)*4);ctx.lineTo(W,ground+7);ctx.lineTo(0,ground+7);ctx.closePath();ctx.fill();ctx.restore();}
+   const shipX=((620-camera*.12)%(W+380)+W+380)%(W+380)-150;ctx.save();ctx.globalAlpha=.68;ctx.fillStyle='#101a2a';ctx.beginPath();ctx.moveTo(shipX,ground-74);ctx.lineTo(shipX+205,ground-74);ctx.lineTo(shipX+174,ground-43);ctx.lineTo(shipX+35,ground-43);ctx.closePath();ctx.fill();rect(shipX+87,ground-175,5,104,'#111a2b');rect(shipX+126,ground-158,4,87,'#111a2b');ctx.fillStyle='#243f56';ctx.beginPath();ctx.moveTo(shipX+95,ground-165);ctx.lineTo(shipX+95,ground-91);ctx.lineTo(shipX+55,ground-96);ctx.closePath();ctx.fill();ctx.beginPath();ctx.moveTo(shipX+133,ground-150);ctx.lineTo(shipX+133,ground-94);ctx.lineTo(shipX+164,ground-98);ctx.closePath();ctx.fill();ctx.restore();
+   for(let i=0;i<10;i++){const lx=((i*127-frame*.22-camera*.08)%(W+50)+W+50)%(W+50),ly=180+(i*29%170)+Math.sin(frame*.04+i)*8;ctx.save();ctx.globalAlpha=.42+.18*Math.sin(frame*.05+i);ctx.fillStyle='#9af4e4';ctx.shadowBlur=15;ctx.shadowColor='#71e8ef';ctx.beginPath();ctx.arc(lx,ly,3,0,Math.PI*2);ctx.fill();ctx.restore();}
+ } else if(level===9){
+   // Time garden: enormous rotating clockwork gears among ancient vines.
+   for(let i=0;i<4;i++){const gx=((i*275-camera*.16)%(W+260)+W+260)%(W+260)-70,gy=145+(i%3)*65,rad=42+(i%2)*16;ctx.save();ctx.globalAlpha=.42;ctx.translate(gx,gy);ctx.rotate(frame*.004*(i%2?-1:1));ctx.strokeStyle=i%2?'#b9c87a':'#dec47a';ctx.lineWidth=5;ctx.beginPath();ctx.arc(0,0,rad,0,Math.PI*2);ctx.stroke();for(let a=0;a<12;a++){const an=a*Math.PI/6;ctx.strokeStyle='#e0d49a';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(Math.cos(an)*(rad-5),Math.sin(an)*(rad-5));ctx.lineTo(Math.cos(an)*(rad+8),Math.sin(an)*(rad+8));ctx.stroke();}ctx.strokeStyle='#d7e6a5';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(rad*.62,0);ctx.moveTo(0,0);ctx.lineTo(0,-rad*.48);ctx.stroke();ctx.fillStyle='#d7e6a5';ctx.beginPath();ctx.arc(0,0,5,0,Math.PI*2);ctx.fill();ctx.restore();}
+   for(let i=0;i<10;i++){const vx=((i*101-camera*.42)%(W+100)+W+100)%(W+100)-40;ctx.save();ctx.globalAlpha=.65;ctx.strokeStyle='#63884f';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(vx,ground+4);ctx.bezierCurveTo(vx-23,ground-35,vx+24,ground-61,vx+7,ground-92);ctx.stroke();for(let j=0;j<4;j++){ctx.fillStyle=j%2?'#b0d77c':'#d8df8d';ctx.beginPath();ctx.ellipse(vx+(j%2?11:-10),ground-25-j*16,9,4,j*.8,0,Math.PI*2);ctx.fill();}ctx.restore();}
+ } else if(level===10){
+   // Swamp of Tears: twisted trees, hanging moss and luminous poisonous spores.
+   for(let i=0;i<11;i++){
+     const tx=((i*119-camera*.19)%(W+160)+W+160)%(W+160)-70, h=105+(i%4)*29;
+     ctx.save();ctx.globalAlpha=.74;ctx.strokeStyle=i%2?'#172f2a':'#203c32';ctx.lineWidth=10;ctx.beginPath();ctx.moveTo(tx,ground);ctx.lineTo(tx+4,ground-h);ctx.lineTo(tx-18,ground-h-24);ctx.moveTo(tx+4,ground-h+28);ctx.lineTo(tx+25,ground-h-5);ctx.stroke();
+     ctx.strokeStyle='#4d8060';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(tx-2,ground-h+10);ctx.quadraticCurveTo(tx-17,ground-h+34,tx-7,ground-h+52);ctx.moveTo(tx+6,ground-h+22);ctx.quadraticCurveTo(tx+25,ground-h+35,tx+17,ground-h+51);ctx.stroke();ctx.restore();
+   }
+   for(let i=0;i<22;i++){const sx=((i*79-frame*(.24+(i%3)*.12)-camera*.08)%(W+30)+W+30)%(W+30),sy=170+(i*47%235)+Math.sin(frame*.045+i)*11;ctx.save();ctx.globalAlpha=.35+.35*Math.sin(frame*.06+i)**2;ctx.fillStyle=i%3?'#91f5c0':'#e0ff8c';ctx.shadowBlur=14;ctx.shadowColor=ctx.fillStyle;ctx.beginPath();ctx.arc(sx,sy,2+(i%3),0,Math.PI*2);ctx.fill();ctx.restore();}
+ } else if(level===11){
+   // Sunken city: ghostly towers behind animated underwater currents and bubbles.
+   for(let i=0;i<8;i++){const tx=((i*151-camera*.15)%(W+170)+W+170)%(W+170)-70,th=100+(i%4)*30;ctx.save();ctx.globalAlpha=.34;ctx.fillStyle=i%2?'#133953':'#1b4f66';ctx.beginPath();ctx.moveTo(tx-24,ground);ctx.lineTo(tx-18,ground-th);ctx.lineTo(tx-7,ground-th-15);ctx.lineTo(tx+5,ground-th);ctx.lineTo(tx+17,ground-th+13);ctx.lineTo(tx+24,ground);ctx.closePath();ctx.fill();for(let y=ground-th+18;y<ground-15;y+=22){ctx.fillStyle='#7ae8f4';ctx.globalAlpha=.17;ctx.fillRect(tx-4,y,8,10);}ctx.restore();}
+   for(let i=0;i<19;i++){const bx=((i*67-frame*(.35+(i%4)*.07))%(W+30)+W+30)%(W+30),by=ground-35-((frame*(.5+(i%3)*.15)+i*37)%300),r=2+i%5;ctx.save();ctx.globalAlpha=.26+.22*Math.sin(frame*.05+i)**2;ctx.strokeStyle='#9cf8ff';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(bx,by,r,0,Math.PI*2);ctx.stroke();ctx.restore();}
+ } else if(level===12){
+   // Frozen peaks: sharp glacier silhouettes and fast, windblown snow.
+   for(let layer=0;layer<3;layer++){ctx.save();ctx.globalAlpha=.42-layer*.07;ctx.fillStyle=['#466d91','#315475','#203c5a'][layer];ctx.beginPath();ctx.moveTo(0,ground);for(let i=-1;i<10;i++){const x=i*140-((camera*(.09+layer*.06))%140),peak=210+layer*33+(i%3)*20;ctx.lineTo(x,ground);ctx.lineTo(x+64,peak);ctx.lineTo(x+91,peak+55);ctx.lineTo(x+112,peak+25);ctx.lineTo(x+154,ground);}ctx.lineTo(W,ground);ctx.closePath();ctx.fill();ctx.strokeStyle='#d9f7ff';ctx.lineWidth=3;ctx.beginPath();for(let i=-1;i<10;i++){const x=i*140-((camera*(.09+layer*.06))%140),peak=210+layer*33+(i%3)*20;ctx.moveTo(x+64,peak);ctx.lineTo(x+79,peak+29);ctx.lineTo(x+91,peak+55);}ctx.stroke();ctx.restore();}
+   for(let i=0;i<58;i++){const sx=((i*113-frame*(.7+(i%4)*.2)-camera*.06)%(W+20)+W+20)%(W+20),sy=(i*79+frame*(.9+(i%3)*.16))%(ground+30);ctx.globalAlpha=.35+(i%3)*.17;rect(sx,sy,i%5===0?3:1.5,i%5===0?5:3,'#d9f7ff');}ctx.globalAlpha=1;
+ } else if(level===13){
+   // Mirror Kingdom: floating reflective panels with animated light sweeps.
+   for(let i=0;i<9;i++){const mx=((i*127-camera*.18)%(W+150)+W+150)%(W+150)-65,my=145+(i%4)*53,h=75+(i%3)*23;ctx.save();ctx.globalAlpha=.4;ctx.fillStyle=i%2?'#743f83':'#4b477a';ctx.beginPath();ctx.moveTo(mx,my-h/2);ctx.lineTo(mx+17,my-h/2+20);ctx.lineTo(mx+13,my+h/2);ctx.lineTo(mx-13,my+h/2-18);ctx.closePath();ctx.fill();ctx.strokeStyle=i%2?'#ffc1f5':'#bceeff';ctx.lineWidth=2;ctx.stroke();ctx.globalAlpha=.33+.18*Math.sin(frame*.045+i);ctx.strokeStyle='#fff4ff';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(mx-4,my-h/2+10);ctx.lineTo(mx+5,my+h/2-24);ctx.stroke();ctx.restore();}
+   for(let i=0;i<14;i++){const sx=((i*83-frame*(.28+(i%3)*.08))%(W+15)+W+15)%(W+15),sy=100+(i*53%280);ctx.save();ctx.globalAlpha=.25+.4*Math.sin(frame*.035+i)**2;ctx.fillStyle='#ffb9ef';ctx.shadowBlur=12;ctx.shadowColor='#ff9de9';ctx.fillRect(sx,sy,2,18);ctx.restore();}
+ } else {
+   // Void realm: suspended shards and pulsing rifts in the sky (Throne and secret final realm).
+   for(let i=0;i<10;i++){
+     let rx=((i*131-camera*.19+Math.sin(frame*.018+i)*15)%(W+120)+W+120)%(W+120)-50;
+     let ry=130+(i*57%190);
+     ctx.save();ctx.globalAlpha=.25+.12*Math.sin(frame*.04+i);ctx.shadowBlur=12;ctx.shadowColor='#b47aff';ctx.fillStyle=i%2?'#3b286c':'#241f50';
+     ctx.beginPath();ctx.moveTo(rx,ry-15);ctx.lineTo(rx+9,ry);ctx.lineTo(rx+2,ry+22);ctx.lineTo(rx-9,ry+5);ctx.closePath();ctx.fill();ctx.strokeStyle='#d8a9ff';ctx.lineWidth=1;ctx.stroke();ctx.restore();
+   }
+ }
+
+ // Procedural world-specific art pass: layered silhouettes, luminous landmarks and moving light.
+ // This supplements hand-painted backgrounds while keeping the frame cost bounded on phones.
+ {
+   const accent=WORLD_ACCENTS[level]||'#c5a6ff';
+   const theme=level%10;
+   // Far skyline with a different silhouette grammar for each group of worlds.
+   ctx.save();ctx.globalAlpha=.20;
+   for(let i=0;i<9;i++){
+     const x=((i*137-camera*(.10+(theme%3)*.025))%(W+180)+W+180)%(W+180)-70;
+     const base=ground-24, h=65+(i*37+level*13)%115;
+     ctx.fillStyle=theme%3===0?'#080b18':theme%3===1?'#101322':'#171329';
+     ctx.beginPath();
+     if(theme===0||theme===4){ctx.moveTo(x-28,base);ctx.lineTo(x-20,base-h*.75);ctx.lineTo(x,base-h);ctx.lineTo(x+17,base-h*.68);ctx.lineTo(x+34,base);}
+     else if(theme===1||theme===5){ctx.moveTo(x-32,base);ctx.lineTo(x-32,base-h*.8);ctx.lineTo(x-15,base-h*.8);ctx.lineTo(x-15,base-h);ctx.lineTo(x+8,base-h);ctx.lineTo(x+8,base-h*.65);ctx.lineTo(x+28,base-h*.65);ctx.lineTo(x+28,base);}
+     else if(theme===2||theme===6){ctx.moveTo(x-34,base);ctx.quadraticCurveTo(x-23,base-h,x,base-h*.75);ctx.quadraticCurveTo(x+22,base-h*1.2,x+35,base);}
+     else {ctx.moveTo(x-28,base);ctx.lineTo(x-8,base-h*.72);ctx.lineTo(x+4,base-h*.55);ctx.lineTo(x+18,base-h);ctx.lineTo(x+34,base);}
+     ctx.closePath();ctx.fill();
+     if(i%3===0){ctx.globalAlpha=.13;ctx.strokeStyle=accent;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,base-h*.35);ctx.lineTo(x+3,base-h*.7);ctx.stroke();ctx.globalAlpha=.20;}
+   }
+   ctx.restore();
+   // Animated rune motes and short light shafts; fixed count avoids expensive particle growth.
+   ctx.save();ctx.globalCompositeOperation='lighter';
+   for(let i=0;i<10;i++){
+     const x=((i*103-frame*(.18+(i%3)*.09)-camera*.07)%(W+30)+W+30)%(W+30)-15;
+     const y=115+(i*67+level*19)%250+Math.sin(frame*.035+i)*9;
+     const r=1.5+(i%3)*.8;ctx.globalAlpha=.16+.22*Math.sin(frame*.045+i)**2;
+     ctx.fillStyle=accent;ctx.shadowBlur=i%4===0?14:5;ctx.shadowColor=accent;
+     ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();
+     if(i%4===0){ctx.globalAlpha*=.55;ctx.fillRect(x-1,y+5,2,14+(i%3)*5);}
+   }
+   ctx.restore();ctx.globalAlpha=1;
+ }
+
+ // Fine details on the ground: cracks, scattered stones, runes and edge lighting.
+ for(let i=0;i<22;i++){
+   const gx=((i*47-camera*.91)%(W+65)+W+65)%(W+65)-20;
+   const gy=ground+18+(i%4)*16;
+   ctx.globalAlpha=.26+(i%3)*.08;
+   rect(gx,gy,7+(i%4)*3,2,level===3?'#4c9baa':level===4?'#8e5848':level>=5?'#543c70':'#46565b');
+   if(i%3===0){ctx.strokeStyle=level===3?'#58dbe9':level>=5?'#a86dff':'#91a58e';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(gx+6,gy-2);ctx.lineTo(gx+11,gy-7);ctx.lineTo(gx+14,gy-3);ctx.stroke();}
+ }
+ ctx.globalAlpha=1;
+ // Glowing crystal/rune markers on platforms, drawn behind the player/enemies.
+ for(let i=0;i<platforms.length;i++){
+   const p=platforms[i],px=p.x-camera+((i*23)%Math.max(40,p.w-18))+7,py=p.y-2;
+   if(px<-40||px>W+40)continue;
+   ctx.save();ctx.globalAlpha=.25+.14*Math.sin(frame*.06+i);ctx.fillStyle=accent;ctx.shadowBlur=14;ctx.shadowColor=accent;ctx.beginPath();ctx.ellipse(px,py+6,14,5,0,0,Math.PI*2);ctx.fill();
+   ctx.globalAlpha=.78;ctx.fillStyle=i%2?'#b0f5ff':'#f3d9ff';ctx.beginPath();ctx.moveTo(px,py-12);ctx.lineTo(px+5,py-4);ctx.lineTo(px,py+4);ctx.lineTo(px-5,py-4);ctx.closePath();ctx.fill();ctx.restore();
+ }
+
+ // Cinematic vignette plus subtle color grade makes the center of play readable.
+ const vignette=ctx.createRadialGradient(W*.5,H*.43,100,W*.5,H*.5,610);
+ vignette.addColorStop(0,'#06091800');vignette.addColorStop(.72,'#06071216');vignette.addColorStop(1,'#03040dcc');
+ ctx.fillStyle=vignette;ctx.fillRect(0,0,W,H);
+
+}
+function drawKnight(x,y,face,walk,atk,inv){
+ ctx.save();ctx.translate(Math.round(x),Math.round(y));ctx.scale(face,1);
+ const weaponColor=weapons[weaponIndex].color;
+ const bob=Math.sin(walk*2)*1.5;
+ // Ground shadow and the aura cast by enchanted steel.
+ ctx.save();ctx.globalAlpha=.28;ctx.fillStyle='#02030b';ctx.beginPath();ctx.ellipse(17,53,22,4,0,0,Math.PI*2);ctx.fill();ctx.restore();
+ if(player.transform>0||ultAnim){ctx.save();ctx.globalAlpha=.15+.08*Math.sin(frame*.22);ctx.shadowBlur=24;ctx.shadowColor=player.transform>0?'#dba1ff':'#a9edff';ctx.fillStyle=player.transform>0?'#9b56ff':'#8ce8ff';ctx.beginPath();ctx.ellipse(17,29,25+Math.sin(frame*.17)*3,29,0,0,Math.PI*2);ctx.fill();ctx.restore();}
+ if(atk>0){ctx.save();ctx.globalAlpha=Math.min(.52,atk/22);ctx.shadowBlur=18;ctx.shadowColor=weaponColor;ctx.fillStyle=weaponColor;ctx.beginPath();ctx.ellipse(18,29,26+Math.sin(frame*.8)*3,30,0,0,Math.PI*2);ctx.fill();ctx.restore();}
+ if(inv>0&&Math.floor(frame/4)%2===0)ctx.globalAlpha=.48;
+ // Layered midnight cape; lower edge flutters with each step.
+ ctx.fillStyle='#100d25';ctx.beginPath();ctx.moveTo(9,14);ctx.lineTo(-5,24+Math.sin(walk)*3);ctx.lineTo(1,43);ctx.lineTo(8,48);ctx.lineTo(14,41);ctx.lineTo(22,47);ctx.lineTo(29,36);ctx.lineTo(23,17);ctx.closePath();ctx.fill();
+ ctx.fillStyle=player.transform>0?'#7136a9':'#38234f';ctx.beginPath();ctx.moveTo(11,19);ctx.lineTo(1,29+Math.sin(walk)*2);ctx.lineTo(8,41);ctx.lineTo(15,36);ctx.lineTo(22,41);ctx.lineTo(26,33);ctx.lineTo(20,20);ctx.closePath();ctx.fill();
+ // Tiny glowing stitching on the cape.
+ ctx.strokeStyle=player.transform>0?'#e7c8ff':'#8d77b4';ctx.lineWidth=1;ctx.globalAlpha=.82;ctx.beginPath();ctx.moveTo(8,27);ctx.lineTo(11,34);ctx.lineTo(8,39);ctx.moveTo(18,26);ctx.lineTo(20,33);ctx.stroke();ctx.globalAlpha=1;
+ // Boots and articulated legs.
+ let step=Math.sin(walk)*3.2;
+ rect(8,38+bob,7,11,'#22253d');rect(19,38-bob,7,11,'#22253d');
+ rect(6+step,47,12,6,'#4c526b');rect(5+step,50,13,4,'#171c31');rect(19-step,47,12,6,'#4c526b');rect(19-step,50,13,4,'#171c31');
+ rect(8+step,47,3,2,'#a9bdd5');rect(22-step,47,3,2,'#a9bdd5');
+ // Chest armor with bevels, shoulder guards and illuminated crest.
+ rect(7,16+bob,21,25,'#20263f');rect(9,17+bob,18,22,'#667b9b');rect(11,19+bob,14,17,'#b9c8d8');
+ rect(14,19+bob,8,17,'#748ba8');rect(16,20+bob,4,13,'#3d4565');
+ ctx.fillStyle='#dde9f5';ctx.beginPath();ctx.moveTo(9,19+bob);ctx.lineTo(12,16+bob);ctx.lineTo(14,22+bob);ctx.lineTo(11,27+bob);ctx.closePath();ctx.fill();
+ ctx.fillStyle='#d6c5ff';ctx.beginPath();ctx.moveTo(20,22+bob);ctx.lineTo(23,26+bob);ctx.lineTo(20,31+bob);ctx.lineTo(17,26+bob);ctx.closePath();ctx.fill();
+ // Belt and tiny central gem.
+ rect(9,35+bob,18,4,'#28233f');rect(11,35+bob,14,2,'#dbbd83');rect(16,34+bob,5,5,'#6ee9ff');rect(17,35+bob,3,3,'#f4ffff');
+ // Shoulder plates and gauntlet.
+ rect(4,20+bob,7,10,'#8497b4');rect(5,21+bob,5,3,'#d9e3ef');rect(25,20+bob,7,10,'#8497b4');rect(26,21+bob,5,3,'#d9e3ef');
+ rect(27,27+bob,5,8,'#4c5875');rect(28,29+bob,4,4,'#c1cee0');
+ // Horned ivory mask: broad faceplate, dark eye sockets, and two curved horns.
+ ctx.fillStyle='#100f20';ctx.beginPath();ctx.moveTo(7,5);ctx.lineTo(3,-2);ctx.lineTo(5,-10);ctx.lineTo(12,-3);ctx.lineTo(14,1);ctx.lineTo(23,1);ctx.lineTo(27,-4);ctx.lineTo(32,-9);ctx.lineTo(32,-1);ctx.lineTo(28,7);ctx.closePath();ctx.fill();
+ ctx.fillStyle='#dce7f1';ctx.beginPath();ctx.moveTo(9,2);ctx.lineTo(12,-1);ctx.lineTo(24,-1);ctx.lineTo(28,4);ctx.lineTo(27,15);ctx.lineTo(23,20);ctx.lineTo(14,20);ctx.lineTo(9,15);ctx.closePath();ctx.fill();
+ // Mask shadows give it a carved, porcelain look.
+ ctx.fillStyle='#9baac1';ctx.beginPath();ctx.moveTo(9,4);ctx.lineTo(14,2);ctx.lineTo(13,15);ctx.lineTo(10,12);ctx.closePath();ctx.fill();
+ ctx.fillStyle='#0b1023';ctx.beginPath();ctx.moveTo(11,7);ctx.lineTo(16,5);ctx.lineTo(15,11);ctx.lineTo(11,12);ctx.closePath();ctx.fill();ctx.beginPath();ctx.moveTo(20,5);ctx.lineTo(26,7);ctx.lineTo(26,12);ctx.lineTo(21,11);ctx.closePath();ctx.fill();
+ ctx.fillStyle=player.transform>0?'#ffe9a0':'#8feaff';ctx.shadowBlur=7;ctx.shadowColor=player.transform>0?'#ffcf76':'#6ce6ff';rect(12,8,3,2,ctx.fillStyle);rect(22,8,3,2,ctx.fillStyle);ctx.shadowBlur=0;
+ rect(15,15,7,2,'#71819a');rect(17,17,3,2,'#eef6ff');
+ // Weapon arm and custom blade; rotation produces a clear swing silhouette.
+ ctx.save();ctx.translate(29,29+bob);let swing=atk>0?(-1.9+(17-atk)/17*2.7):Math.sin(walk)*.09;ctx.rotate(swing);
+ rect(-3,-2,8,8,'#4d395b');rect(-2,2,6,10,'#9baec4');rect(-1,9,4,6,'#9b754f');rect(-2,13,6,3,'#e0bc77');
+ const wc=weaponColor;ctx.shadowBlur=atk>0?18:7;ctx.shadowColor=wc;ctx.fillStyle=wc;ctx.beginPath();ctx.moveTo(-1,-20);ctx.lineTo(3,-25);ctx.lineTo(7,-20);ctx.lineTo(5,5);ctx.lineTo(2,9);ctx.lineTo(0,5);ctx.closePath();ctx.fill();
+ ctx.shadowBlur=0;rect(1,-19,2,19,'#ffffff');rect(-3,-17,10,3,'#efe4d3');rect(1,10,3,7,'#805b4c');ctx.restore();
+ // Specular edge-work and beveled armor highlights keep the knight readable at high resolution.
+ ctx.save();ctx.globalAlpha=.48;ctx.strokeStyle='#ecf5ff';ctx.lineWidth=.75;ctx.beginPath();ctx.moveTo(9,18+bob);ctx.lineTo(12,16+bob);ctx.lineTo(25,18+bob);ctx.lineTo(28,23+bob);ctx.moveTo(11,20+bob);ctx.lineTo(12,33+bob);ctx.lineTo(16,37+bob);ctx.moveTo(22,21+bob);ctx.lineTo(24,31+bob);ctx.stroke();ctx.restore();
+ const metal=ctx.createLinearGradient(7,16,29,40);metal.addColorStop(0,'#f5fbff33');metal.addColorStop(.42,'#f9ffff00');metal.addColorStop(1,'#090d2533');ctx.fillStyle=metal;ctx.beginPath();ctx.moveTo(8,17+bob);ctx.lineTo(28,17+bob);ctx.lineTo(29,36+bob);ctx.lineTo(19,42+bob);ctx.lineTo(8,37+bob);ctx.closePath();ctx.fill();
+ // Small shoulder rune pulses while transformed.
+ if(player.transform>0){ctx.globalAlpha=.6+.35*Math.sin(frame*.35);ctx.fillStyle='#fff0a5';ctx.shadowBlur=9;ctx.shadowColor='#dcb0ff';ctx.beginPath();ctx.arc(7,24,2.2,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;}
+ ctx.restore();
+}
+function drawEnemy(e){
+ const x=e.x-camera,y=e.y;ctx.save();ctx.translate(Math.round(x),Math.round(y));ctx.scale(e.face,1);
+ const hostile=e.kind==='wraith'?'#c18aff':e.kind==='skeleton'?'#ff9b83':'#72ffd2';
+ // Contact shadow and a low magical haze.
+ ctx.globalAlpha=.24+.12*Math.sin(frame*.12+e.baseX);ctx.fillStyle=hostile;ctx.shadowBlur=12;ctx.shadowColor=hostile;ctx.beginPath();ctx.ellipse(e.w/2,e.h+1,e.w*.75,5,0,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;ctx.globalAlpha=e.hit>0?.55:1;
+ if(e.kind==='slime'){
+   const sy=Math.sin(frame*.12+e.baseX)*2;
+   ctx.fillStyle='#143e45';ctx.beginPath();ctx.ellipse(16,26+sy,18,13,0,Math.PI,0);ctx.lineTo(34,30+sy);ctx.quadraticCurveTo(17,43+sy,-1,30+sy);ctx.fill();
+   ctx.fillStyle='#2c9a8b';ctx.beginPath();ctx.ellipse(16,25+sy,16,11,0,Math.PI,0);ctx.lineTo(32,29+sy);ctx.quadraticCurveTo(16,39+sy,1,29+sy);ctx.fill();
+   ctx.fillStyle='#85f6db';ctx.beginPath();ctx.ellipse(10,22+sy,5,3,-.4,0,Math.PI*2);ctx.fill();rect(8,23+sy,4,5,'#12283c');rect(22,23+sy,4,5,'#12283c');rect(9,23+sy,2,2,'#fff');rect(23,23+sy,2,2,'#fff');
+   rect(12,31+sy,3,2,'#b3fff0');rect(20,31+sy,3,2,'#b3fff0');
+ }else if(e.kind==='skeleton'){
+   // ragged hood and bone silhouette
+   ctx.fillStyle='#35253f';ctx.beginPath();ctx.moveTo(5,19);ctx.lineTo(5,4);ctx.lineTo(13,-1);ctx.lineTo(25,3);ctx.lineTo(29,16);ctx.lineTo(25,20);ctx.fill();
+   rect(9,14,17,17,'#7e8c9e');rect(10,14,15,14,'#d8d1bb');rect(11,3,15,14,'#77788b');rect(12,4,13,12,'#e8e0cc');
+   rect(11,7,5,4,'#29263f');rect(21,7,5,4,'#29263f');rect(12,7,2,2,'#ff9f86');rect(22,7,2,2,'#ff9f86');
+   rect(14,13,3,2,'#66566a');rect(20,13,3,2,'#66566a');rect(12,17,3,2,'#66566a');rect(22,17,3,2,'#66566a');
+   rect(7,16,5,8,'#acb7c3');rect(25,16,6,8,'#acb7c3');rect(9,29,6,7,'#b9b5aa');rect(21,29,6,7,'#b9b5aa');rect(9,34,7,3,'#4a4058');rect(21,34,7,3,'#4a4058');
+   // little rusty sword
+   ctx.save();ctx.translate(27,22);ctx.rotate(Math.sin(frame*.08+e.baseX)*.12);rect(0,-7,3,14,'#a9d0d7');rect(-2,-7,7,2,'#edf5ef');rect(1,7,2,6,'#8d5d4c');ctx.restore();
+ }else{
+   // Wraith robe, segmented ghost tails and a luminous face.
+   ctx.fillStyle='#24143e';ctx.beginPath();ctx.moveTo(4,33);ctx.lineTo(3,12);ctx.lineTo(12,2);ctx.lineTo(26,4);ctx.lineTo(33,18);ctx.lineTo(29,34);ctx.lineTo(22,27);ctx.lineTo(17,38);ctx.lineTo(11,29);ctx.closePath();ctx.fill();
+   ctx.fillStyle='#65449b';ctx.beginPath();ctx.moveTo(7,30);ctx.lineTo(8,12);ctx.lineTo(14,5);ctx.lineTo(24,7);ctx.lineTo(29,19);ctx.lineTo(24,29);ctx.lineTo(18,23);ctx.lineTo(15,32);ctx.closePath();ctx.fill();
+   ctx.fillStyle='#b99aff';ctx.beginPath();ctx.moveTo(11,11);ctx.lineTo(14,4);ctx.lineTo(17,12);ctx.lineTo(14,17);ctx.closePath();ctx.fill();
+   ctx.shadowBlur=9;ctx.shadowColor='#ff75da';rect(10,13,6,3,'#ffb3e9');rect(22,13,6,3,'#ffb3e9');ctx.shadowBlur=0;
+   ctx.fillStyle='#120c26';ctx.beginPath();ctx.moveTo(5,31);ctx.lineTo(12,29);ctx.lineTo(7,38);ctx.lineTo(2,40);ctx.fill();ctx.beginPath();ctx.moveTo(22,29);ctx.lineTo(31,30);ctx.lineTo(35,38);ctx.lineTo(27,36);ctx.fill();
+ }
+ // Edge highlights and floating motes signal enemy type and movement.
+ ctx.globalAlpha=.78;ctx.fillStyle=hostile;rect(2,Math.min(e.h-4,Math.max(5,Math.sin(frame*.12+e.baseX)*2+8)),3,2,hostile);ctx.restore();
+ if(e.hp<e.max){rect(x-2,y-8,e.w+4,4,'#180d20');rect(x-1,y-7,(e.w+2)*e.hp/e.max,2,hostile);rect(x-2,y-9,e.w+4,1,'#d7c5eb');}
+}
+function drawBoss(b){
+ const x=b.x-camera,y=b.y;ctx.save();ctx.translate(Math.round(x),Math.round(y));ctx.scale(b.face,1);
+ const glow=level===3?'#67eeff':level===4?'#ffc56e':level>=5?'#c08aff':level===2?'#fa5b9e':'#9ff4c7';
+ const armor=level===3?'#397c91':level===4?'#b26c45':level===5?'#7043a8':level===2?'#a05cba':'#778b8c';
+ const dark=level===3?'#102c48':level===4?'#4a2633':level>=5?'#1a102d':'#243044';
+ // Giant ground shadow and aura ring.
+ ctx.save();ctx.globalAlpha=.28+.09*Math.sin(frame*.08);ctx.fillStyle=glow;ctx.shadowBlur=22;ctx.shadowColor=glow;ctx.beginPath();ctx.ellipse(34,96,54,9,0,0,Math.PI*2);ctx.fill();ctx.restore();
+ if(b.phase===2){ctx.save();ctx.globalAlpha=.25+.12*Math.sin(frame*.18);ctx.strokeStyle=glow;ctx.lineWidth=3;ctx.shadowBlur=18;ctx.shadowColor=glow;ctx.beginPath();ctx.ellipse(34,47,48+Math.sin(frame*.08)*4,53,0,0,Math.PI*2);ctx.stroke();ctx.restore();}
+ if(b.hit>0){ctx.globalAlpha=.5+.2*Math.sin(frame);}
+ // Oversized tattered mantle, with angular torn tabs.
+ ctx.fillStyle=dark;ctx.beginPath();ctx.moveTo(13,17);ctx.lineTo(-8,42);ctx.lineTo(-13,77);ctx.lineTo(1,91);ctx.lineTo(11,82);ctx.lineTo(21,96);ctx.lineTo(31,83);ctx.lineTo(45,95);ctx.lineTo(61,80);ctx.lineTo(73,88);ctx.lineTo(67,48);ctx.lineTo(54,17);ctx.closePath();ctx.fill();
+ ctx.fillStyle=level>=5?'#3c2469':level===3?'#20657e':level===4?'#78423c':'#3d3555';ctx.beginPath();ctx.moveTo(18,25);ctx.lineTo(4,51);ctx.lineTo(9,79);ctx.lineTo(21,70);ctx.lineTo(31,85);ctx.lineTo(43,69);ctx.lineTo(57,81);ctx.lineTo(61,47);ctx.lineTo(49,24);ctx.closePath();ctx.fill();
+ // Shoulder plates and engraved torso.
+ rect(9,27,50,47,dark);rect(13,25,43,43,armor);rect(19,30,31,31,'#aab6c8');rect(22,31,25,27,armor);rect(25,33,18,24,dark);rect(28,34,12,20,armor);
+ rect(6,31,14,17,'#2d3149');rect(8,32,10,12,armor);rect(48,31,15,18,'#2d3149');rect(50,32,11,12,armor);
+ // Rune core with radiating spokes.
+ ctx.save();ctx.translate(34,47);ctx.rotate(frame*.012*(b.phase===2?2:1));ctx.shadowBlur=12;ctx.shadowColor=glow;ctx.strokeStyle=glow;ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,10,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.moveTo(0,-15);ctx.lineTo(0,15);ctx.moveTo(-13,0);ctx.lineTo(13,0);ctx.moveTo(-8,-8);ctx.lineTo(8,8);ctx.moveTo(8,-8);ctx.lineTo(-8,8);ctx.stroke();ctx.fillStyle='#fff4cf';ctx.beginPath();ctx.moveTo(0,-6);ctx.lineTo(5,0);ctx.lineTo(0,6);ctx.lineTo(-5,0);ctx.closePath();ctx.fill();ctx.restore();
+ // Helmet dome and jagged horns make the boss silhouette instantly readable.
+ ctx.fillStyle=dark;ctx.beginPath();ctx.moveTo(14,16);ctx.lineTo(11,2);ctx.lineTo(2,-8);ctx.lineTo(16,-3);ctx.lineTo(22,3);ctx.lineTo(45,3);ctx.lineTo(53,-8);ctx.lineTo(66,-13);ctx.lineTo(57,1);ctx.lineTo(55,18);ctx.closePath();ctx.fill();
+ ctx.fillStyle=armor;ctx.beginPath();ctx.moveTo(19,7);ctx.lineTo(24,0);ctx.lineTo(43,0);ctx.lineTo(50,7);ctx.lineTo(48,24);ctx.lineTo(38,31);ctx.lineTo(27,27);ctx.lineTo(19,20);ctx.closePath();ctx.fill();
+ rect(21,9,26,5,dark);rect(23,13,7,5,glow);rect(39,13,7,5,glow);ctx.save();ctx.shadowBlur=12;ctx.shadowColor=glow;ctx.fillStyle='#fff0c0';rect(24,14,3,2,'#fff0c0');rect(41,14,3,2,'#fff0c0');ctx.restore();
+ // Rib plates / claws and segmented armored legs.
+ rect(19,61,11,16,dark);rect(39,61,11,16,dark);rect(20,64,8,10,armor);rect(41,64,7,10,armor);rect(16,76,15,6,'#1a1a2d');rect(39,76,16,6,'#1a1a2d');rect(13,80,18,8,'#4e435f');rect(39,80,20,8,'#4e435f');
+ for(let i=0;i<4;i++){rect(22+i*3,58,2,6,glow);}
+ // Great rune blade; the sweep arc signals the boss wind-up.
+ ctx.save();ctx.translate(63,46);let swing=b.attack>65?Math.sin((b.attack-65)/25*Math.PI)*1.15:Math.sin(frame*.035)*.06;ctx.rotate(swing);
+ ctx.shadowBlur=13;ctx.shadowColor=glow;ctx.fillStyle=glow;ctx.beginPath();ctx.moveTo(-1,-13);ctx.lineTo(5,-24);ctx.lineTo(11,-12);ctx.lineTo(8,23);ctx.lineTo(4,35);ctx.lineTo(1,23);ctx.closePath();ctx.fill();ctx.shadowBlur=0;rect(3,-13,2,38,'#fff4db');rect(-5,-8,17,4,'#d9d5e8');rect(3,26,5,13,'#8c624e');rect(0,31,12,3,'#e4c98a');ctx.restore();
+ if(b.attack>65){ctx.save();ctx.globalAlpha=.55;ctx.strokeStyle=glow;ctx.lineWidth=4;ctx.shadowBlur=18;ctx.shadowColor=glow;ctx.beginPath();ctx.arc(40,48,75,-.92,.85);ctx.stroke();ctx.strokeStyle='#fff1d0';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(40,48,68,-.87,.79);ctx.stroke();ctx.restore();}
+ // Energy wisps orbit the crown.
+ for(let i=0;i<5;i++){let a=frame*.035+i*Math.PI*2/5;ctx.save();ctx.globalAlpha=.45;ctx.fillStyle=glow;ctx.shadowBlur=8;ctx.shadowColor=glow;ctx.beginPath();ctx.arc(34+Math.cos(a)*35,13+Math.sin(a)*17,2+(i%2),0,Math.PI*2);ctx.fill();ctx.restore();}
+ ctx.restore();
+ if(b.hp<b.max){rect(x-3,y-19,b.w+6,6,'#170d24');rect(x-2,y-18,(b.w+4)*b.hp/b.max,4,glow);rect(x-3,y-20,b.w+6,1,'#f5d5ff');}
+}
+function draw(){
+ ctx.save();if(screenShake>0.1)ctx.translate((Math.random()-.5)*screenShake,(Math.random()-.5)*screenShake*.55);
+ drawBackground();
+ // The signature ultimate cutscene is composited above the scene after world rendering.
+ if(screenFlash>0){ctx.save();ctx.globalAlpha=screenFlash*.42;ctx.fillStyle='#f4e9ff';ctx.fillRect(0,0,W,H);ctx.restore();}
+ // magic projectiles
+ for(const s of spells){const sx=s.x-camera;ctx.save();ctx.globalAlpha=.85;ctx.shadowBlur=18;ctx.shadowColor='#6de8ff';ctx.fillStyle='#a8f4ff';ctx.beginPath();ctx.arc(sx,s.y,9+Math.sin(frame*.4)*2,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ffffff';ctx.beginPath();ctx.arc(sx-s.face*3,s.y-2,3,0,Math.PI*2);ctx.fill();ctx.restore();}
+ // exit portal
+ let ex=exitX-camera;if(ex>-80&&ex<W+80){const pc=boss?'#5d607c':(WORLD_ACCENTS[level]||'#c5a6ff');ctx.save();ctx.globalAlpha=.2;ctx.fillStyle=pc;ctx.shadowBlur=30;ctx.shadowColor=pc;ctx.beginPath();ctx.ellipse(ex,ground-50,39,54,0,0,Math.PI*2);ctx.fill();ctx.globalAlpha=.8;for(let r=0;r<3;r++){ctx.strokeStyle=r%2?'#fff0bd':pc;ctx.lineWidth=r===0?4:1.5;ctx.beginPath();ctx.ellipse(ex,ground-50,23+r*8,42+r*4,frame*.01*(r%2?1:-1),0,Math.PI*2);ctx.stroke();}for(let i=0;i<8;i++){let a=frame*.045+i*Math.PI/4;ctx.fillStyle=pc;ctx.shadowBlur=10;ctx.shadowColor=pc;ctx.beginPath();ctx.arc(ex+Math.cos(a)*31,ground-50+Math.sin(a)*45,2.4,0,Math.PI*2);ctx.fill();}ctx.restore();ctx.globalAlpha=1;ctx.fillStyle='#f4d68a';ctx.font='bold 12px system-ui';ctx.textAlign='center';ctx.shadowBlur=6;ctx.shadowColor='#000';ctx.fillText(boss?'DERROTE O CHEFE':'PORTAL',ex,ground-112);ctx.shadowBlur=0;}
+ // Ambient motes and foreground glints follow the world's palette.
+ const moteColor=WORLD_ACCENTS[level]||'#b6f6dd';
+ for(let i=0;i<26;i++){
+   const mx=((i*157-frame*(.2+(i%4)*.12)-camera*.04)%(W+18)+W+18)%(W+18)-9;
+   const my=70+(i*83%370)+Math.sin(frame*.025+i*2)*6;
+   const shimmer=.25+.55*(.5+.5*Math.sin(frame*.065+i));
+   ctx.save();ctx.globalAlpha=shimmer;ctx.fillStyle=moteColor;ctx.shadowBlur=i%7===0?9:3;ctx.shadowColor=moteColor;ctx.fillRect(mx,my,i%7===0?3:1.5,i%7===0?3:1.5);ctx.restore();
+ }
+ enemies.forEach(drawEnemy);if(boss){
+   const bx=boss.x-camera+boss.w/2, by=boss.y+boss.h*.52;
+   const bossGlow=level===49?'#e2a0ff':(WORLD_ACCENTS[level]||'#c18aff');
+   // Animated sigil beneath every guardian: layered rings pulse as the fight escalates.
+   ctx.save();ctx.globalCompositeOperation='lighter';
+   const pulse=1+.07*Math.sin(frame*.09);
+   ctx.globalAlpha=.13+(boss.phase===2?.13:0);ctx.strokeStyle=bossGlow;ctx.lineWidth=2;ctx.shadowBlur=18;ctx.shadowColor=bossGlow;
+   ctx.beginPath();ctx.ellipse(bx,ground-3,68*pulse,12*pulse,0,0,Math.PI*2);ctx.stroke();
+   ctx.globalAlpha=.32;ctx.setLineDash([5,8]);ctx.beginPath();ctx.ellipse(bx,ground-3,83,17,-frame*.006,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
+   for(let k=0;k<6;k++){const a=frame*.025+k*Math.PI/3;const sx=bx+Math.cos(a)*(48+(boss.phase===2?8:0)),sy=by+Math.sin(a)*38;ctx.globalAlpha=.42+.22*Math.sin(frame*.07+k);ctx.fillStyle=bossGlow;ctx.beginPath();ctx.moveTo(sx,sy-4);ctx.lineTo(sx+3,sy);ctx.lineTo(sx,sy+4);ctx.lineTo(sx-3,sy);ctx.closePath();ctx.fill();}
+   ctx.restore();
+   if(boss.phase===2){ctx.save();ctx.globalAlpha=.12+.09*Math.sin(frame*.14);ctx.fillStyle=bossGlow;ctx.shadowBlur=32;ctx.shadowColor=bossGlow;ctx.beginPath();ctx.ellipse(bx,by,55+Math.sin(frame*.08)*5,75+Math.cos(frame*.08)*5,0,0,Math.PI*2);ctx.fill();ctx.restore();}
+   if(boss.attack>65){ctx.save();ctx.globalAlpha=.2+.2*Math.sin(frame*.5);ctx.fillStyle='#ff3f7c';ctx.beginPath();ctx.ellipse(bx,ground-3,90,10,0,0,Math.PI*2);ctx.fill();ctx.restore();}
+   if(freeBattleMode){ctx.save();const scale=.78+((boss.depth||0)+1)*.12;ctx.translate(boss.x-camera+boss.w/2, boss.y+boss.h-((boss.depth||0)+1)*24);ctx.scale(scale,scale);drawBoss({...boss,x:-boss.w/2,y:-boss.h,w:boss.w,h:boss.h});ctx.restore();}else drawBoss(boss);
+ }
+ if(player.atk>0){ctx.save();let power=player.atk/17;ctx.strokeStyle=weapons[weaponIndex].color;ctx.globalAlpha=.25+power*.55;ctx.strokeStyle=player.atk>8?'#fff2b0':'#8ce8ff';ctx.lineWidth=3+power*7;ctx.shadowBlur=18;ctx.shadowColor='#ffe8a0';ctx.beginPath();let sx=player.x-camera+(player.face===1?player.w:0);let start=player.face===1?-1.18:Math.PI-1.18,end=player.face===1?1.18:Math.PI+1.18;ctx.arc(sx,player.y+29,weapons[weaponIndex].range*.72+Math.sin(frame*.7)*4,start,end);ctx.stroke();ctx.restore();}
+ if(ultAnim){ctx.save();ctx.globalAlpha=.55+.35*Math.sin(frame*.8);ctx.shadowBlur=35;ctx.shadowColor='#b77aff';ctx.fillStyle='#b77aff';ctx.beginPath();ctx.ellipse(player.x-camera+player.w/2,player.y+player.h/2,35+Math.sin(frame)*7,52+Math.cos(frame)*5,0,0,Math.PI*2);ctx.fill();ctx.restore();}
+ if(player.transform>0){ctx.save();ctx.globalAlpha=.35+.15*Math.sin(frame*.5);ctx.strokeStyle='#bd83ff';ctx.lineWidth=5;ctx.shadowBlur=24;ctx.shadowColor='#9f69ff';ctx.beginPath();ctx.ellipse(player.x-camera+player.w/2,player.y+player.h/2,32+Math.sin(frame*.2)*5,48,0,0,Math.PI*2);ctx.stroke();ctx.restore();}
+ // Knight movement ribbon and soft footing light sell speed without changing hitboxes.
+ if(Math.abs(player.vx)>.5){ctx.save();ctx.globalAlpha=.16;ctx.strokeStyle=weapons[weaponIndex].color;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(player.x-camera+player.w/2-player.face*9,player.y+player.h-4);ctx.lineTo(player.x-camera+player.w/2-player.face*(20+Math.abs(player.vx)*2),player.y+player.h-7);ctx.stroke();ctx.restore();}
+ ctx.save();ctx.globalAlpha=.16;ctx.fillStyle=player.transform>0?'#c38aff':'#7c9dd6';ctx.shadowBlur=12;ctx.shadowColor=ctx.fillStyle;ctx.beginPath();ctx.ellipse(player.x-camera+player.w/2,player.y+player.h+1,17,3,0,0,Math.PI*2);ctx.fill();ctx.restore();
+ if(freeBattleMode){ctx.save();const d=player.depth||0;const sc=.80+(d+1)*.12;const px=player.x-camera+player.w/2;const py=player.y+player.h-(d+1)*24;ctx.translate(px,py);ctx.scale(sc,sc);drawKnight(-player.w/2,-player.h,player.face,player.walk,player.atk,player.inv);ctx.restore();}else drawKnight(player.x-camera,player.y,player.face,player.walk,player.atk,player.inv);
+ // weapon-specific blade glow
+ if(player.atk>0){ctx.save();ctx.globalAlpha=.9;ctx.strokeStyle=weapons[weaponIndex].color;ctx.lineWidth=4;ctx.shadowBlur=15;ctx.shadowColor=weapons[weaponIndex].color;ctx.beginPath();ctx.moveTo(player.x-camera+player.w/2,player.y+27);ctx.lineTo(player.x-camera+player.w/2+player.face*weapons[weaponIndex].range,player.y+17+(weaponIndex===1?-13:weaponIndex===2?13:0));ctx.stroke();ctx.restore();}
+ for(const p of particles){
+   const pa=Math.max(0,p.life/48);ctx.save();ctx.globalAlpha=pa;ctx.fillStyle=p.color;ctx.shadowBlur=Math.min(18,p.size*3);ctx.shadowColor=p.color;
+   ctx.beginPath();ctx.arc(p.x-camera,p.y,p.size*.72,0,Math.PI*2);ctx.fill();
+   ctx.restore();
+ }
+ // Soft character rim-light and floor bounce add extra separation from the scenery.
+ const px=player.x-camera+player.w/2,py=player.y+player.h*.55;
+ ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=player.transform>0?.35:.14;
+ const rim=ctx.createRadialGradient(px,py,3,px,py,78);rim.addColorStop(0,player.transform>0?'#d28cff66':(WORLD_ACCENTS[level]||'#8ce8ff')+'55');rim.addColorStop(1,'#00000000');ctx.fillStyle=rim;ctx.beginPath();ctx.ellipse(px,py,78,100,0,0,Math.PI*2);ctx.fill();ctx.restore();
+ // Filmic lens vignette and restrained chromatic bloom, with no loss of gameplay clarity.
+ ctx.save();const vg=ctx.createRadialGradient(W*.5,H*.46,120,W*.5,H*.48,650);vg.addColorStop(0,'#02030a00');vg.addColorStop(.72,'#06040d12');vg.addColorStop(1,'#02030bd0');ctx.fillStyle=vg;ctx.fillRect(0,0,W,H);
+ const floorGlow=ctx.createLinearGradient(0,ground-36,0,H);floorGlow.addColorStop(0,'#00000000');floorGlow.addColorStop(1,(WORLD_ACCENTS[level]||'#9e7aff')+'18');ctx.fillStyle=floorGlow;ctx.fillRect(0,ground-36,W,H-ground+36);ctx.restore();
+ if(ultAnim&&!ultAnim.cinematic)drawUltimateCutscene();
+ if(supremeRay){const r=supremeRay;ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=Math.min(1,r.t/6);const sx=player.x-camera+player.w/2,sy=player.y+player.h/2;const beam=ctx.createLinearGradient(sx,sy,sx+r.dir*W,sy);beam.addColorStop(0,'#ffffff');beam.addColorStop(.18,'#b7f7ff');beam.addColorStop(.55,'#a66bff');beam.addColorStop(1,'#ffffff00');ctx.strokeStyle=beam;ctx.lineWidth=42;ctx.shadowBlur=32;ctx.shadowColor='#a66bff';ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(sx+r.dir*W,sy);ctx.stroke();ctx.strokeStyle='#ffffff';ctx.lineWidth=9;ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(sx+r.dir*W,sy);ctx.stroke();ctx.restore();r.t--;if(r.t<=0)supremeRay=null;}
+ const shell=document.querySelector('.shell');if(shell)shell.classList.toggle('cinematic',!!ultAnim);
+ ctx.restore();
+}
+// High-fidelity anime-style ultimate cutscene, drawn as a layered 2.5D scene.
+// It uses perspective, bevels, volumetric light, camera framing and a staged impact.
+function drawUltimateCutscene(){
+ const a=ultAnim;if(!a)return;const t=a.t,dir=a.dir;
+ const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
+ const smooth=v=>{v=clamp(v,0,1);return v*v*(3-2*v);};
+ const charge=smooth(t/55),release=smooth((t-61)/29),after=smooth((t-112)/58);
+ ctx.save();
+ // Darken the world as the camera moves into a close cinematic angle.
+ ctx.globalAlpha=t<80?.68:.45;ctx.fillStyle=t<61?'#080515':'#030713';ctx.fillRect(0,0,W,H);ctx.globalAlpha=1;
+ const bar=clamp(t*1.8,0,58);ctx.fillStyle='#020207';ctx.fillRect(0,0,W,bar);ctx.fillRect(0,H-bar,W,bar);
+ // Radial atmosphere, god rays and a distant dimensional rupture.
+ const pulse=.5+.5*Math.sin(t*.23),riftX=710+Math.sin(t*.035)*9;
+ const bg=ctx.createRadialGradient(riftX,235,2,riftX,235,330);bg.addColorStop(0,t<62?'#7a43d966':'#60ddff66');bg.addColorStop(.25,'#a35bff25');bg.addColorStop(1,'#00000000');ctx.fillStyle=bg;ctx.fillRect(390,72,570,390);
+ ctx.save();ctx.globalAlpha=.09+.1*pulse;ctx.globalCompositeOperation='lighter';
+ for(let i=0;i<18;i++){
+   const bx=riftX+(i-9)*17,lean=Math.sin(t*.07+i)*48;
+   const ray=ctx.createLinearGradient(bx,75,bx+lean,460);ray.addColorStop(0,'#c5a4ff00');ray.addColorStop(.52,i%3?'#bda3ff55':'#b3f6ff66');ray.addColorStop(1,'#8ce8ff00');
+   ctx.fillStyle=ray;ctx.beginPath();ctx.moveTo(bx,75);ctx.lineTo(bx+9,75);ctx.lineTo(bx+lean+42,460);ctx.lineTo(bx+lean-22,460);ctx.closePath();ctx.fill();
+ }
+ ctx.restore();
+ // Perspective floor grid converges into the rift, making the shot feel three-dimensional.
+ ctx.save();ctx.globalAlpha=.12+.08*pulse;ctx.strokeStyle='#9ddfff';ctx.lineWidth=1;
+ for(let i=-9;i<=9;i++){ctx.beginPath();ctx.moveTo(480+i*18,445);ctx.lineTo(480+i*65,bar+90);ctx.stroke();}
+ for(let j=0;j<7;j++){const yy=340+j*j*3.2;ctx.beginPath();ctx.moveTo(0,yy);ctx.lineTo(W,yy);ctx.stroke();}
+ ctx.restore();
+ // Distant antagonist silhouette, receding into haze.
+ const bx=760,by=274,bScale=1.45+.04*Math.sin(t*.13);
+ ctx.save();ctx.translate(bx,by);ctx.scale(bScale,bScale);ctx.globalAlpha=.32+.12*pulse;
+ let cape=ctx.createLinearGradient(-45,-85,55,95);cape.addColorStop(0,'#23203e');cape.addColorStop(1,'#080b1c');ctx.fillStyle=cape;
+ ctx.beginPath();ctx.moveTo(-20,-70);ctx.lineTo(-61,-23);ctx.lineTo(-47,62);ctx.lineTo(-17,47);ctx.lineTo(4,80);ctx.lineTo(26,48);ctx.lineTo(57,67);ctx.lineTo(45,-33);ctx.lineTo(21,-72);ctx.closePath();ctx.fill();
+ ctx.fillStyle='#111328';ctx.beginPath();ctx.moveTo(-28,-68);ctx.lineTo(-40,-106);ctx.lineTo(-11,-89);ctx.lineTo(13,-90);ctx.lineTo(38,-119);ctx.lineTo(31,-78);ctx.lineTo(20,-55);ctx.closePath();ctx.fill();
+ ctx.strokeStyle='#b892ff';ctx.lineWidth=2;ctx.shadowBlur=18;ctx.shadowColor='#ac70ff';ctx.beginPath();ctx.moveTo(-14,-69);ctx.lineTo(0,-78);ctx.lineTo(15,-68);ctx.stroke();ctx.fillStyle='#a4efff';ctx.fillRect(-15,-65,9,3);ctx.fillRect(8,-65,9,3);ctx.restore();
+ // Expanding sigil behind the hero, rendered in tilted perspective.
+ const hx=275+Math.sin(t*.045)*5,hy=284;
+ ctx.save();ctx.translate(hx,hy);ctx.rotate(-.12+Math.sin(t*.025)*.025);
+ for(let r=0;r<5;r++){
+   const rad=56+r*19+charge*24;
+   ctx.save();ctx.scale(1,.56);ctx.rotate(t*(r%2?-.012:.014)*(r+1));ctx.globalAlpha=(.64-r*.07)*(1-after*.7);
+   ctx.strokeStyle=['#ffeab0','#9ef4ff','#c6a0ff','#fff4d4','#85cfff'][r];ctx.lineWidth=r===0?2.7:1.2;ctx.shadowBlur=18;ctx.shadowColor=ctx.strokeStyle;
+   ctx.setLineDash(r%2?[6,8]:[]);ctx.beginPath();ctx.arc(0,0,rad,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
+   for(let k=0;k<12;k++){const ang=k*Math.PI/6,rr=rad;ctx.save();ctx.rotate(ang);ctx.fillStyle=k%3?'#d5faff':'#fff0b5';ctx.beginPath();ctx.moveTo(-3,-rr-5);ctx.lineTo(0,-rr-12);ctx.lineTo(3,-rr-5);ctx.lineTo(0,-rr+2);ctx.closePath();ctx.fill();ctx.restore();}
+   ctx.restore();
+ }
+ ctx.restore();
+ // The hero is a bespoke, sculpted silhouette: layered cape, metallic armor, porcelain mask.
+ const heroScale=2.42+charge*.12;
+ ctx.save();ctx.translate(hx,hy+38);ctx.scale(heroScale*dir,heroScale);ctx.rotate(-.025+Math.sin(t*.12)*.012);
+ // Deep cast shadow
+ let sh=ctx.createRadialGradient(0,35,3,0,35,55);sh.addColorStop(0,'#05050cbb');sh.addColorStop(1,'#05050c00');ctx.fillStyle=sh;ctx.beginPath();ctx.ellipse(0,35,58,17,0,0,Math.PI*2);ctx.fill();
+ // Cape with gradient depth, rim, and wind-torn trailing points
+ const capeGrad=ctx.createLinearGradient(-42,-52,43,56);capeGrad.addColorStop(0,'#28203f');capeGrad.addColorStop(.35,'#111326');capeGrad.addColorStop(.78,'#090b18');capeGrad.addColorStop(1,'#5a367c');
+ ctx.fillStyle=capeGrad;ctx.beginPath();ctx.moveTo(-15,-51);ctx.lineTo(-43,-32);ctx.lineTo(-52,9);ctx.lineTo(-32,2);ctx.lineTo(-30,39);ctx.lineTo(-12,29);ctx.lineTo(2,47);ctx.lineTo(18,28);ctx.lineTo(36,40);ctx.lineTo(43,1);ctx.lineTo(28,-48);ctx.closePath();ctx.fill();
+ ctx.strokeStyle='#a47be7';ctx.globalAlpha=.62;ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(-34,-26);ctx.quadraticCurveTo(-18,4,-27,30);ctx.moveTo(26,-24);ctx.quadraticCurveTo(38,4,18,29);ctx.stroke();ctx.globalAlpha=1;
+ // Legs and boots
+ const metal=ctx.createLinearGradient(-18,-5,22,39);metal.addColorStop(0,'#f1f7ff');metal.addColorStop(.18,'#889cbb');metal.addColorStop(.46,'#39425f');metal.addColorStop(.7,'#adbfd7');metal.addColorStop(1,'#1a1c36');
+ ctx.fillStyle='#14172b';ctx.beginPath();ctx.moveTo(-18,-6);ctx.lineTo(-3,-4);ctx.lineTo(-4,22);ctx.lineTo(-19,27);ctx.closePath();ctx.fill();ctx.beginPath();ctx.moveTo(5,-4);ctx.lineTo(20,-7);ctx.lineTo(22,24);ctx.lineTo(7,25);ctx.closePath();ctx.fill();
+ ctx.fillStyle=metal;ctx.beginPath();ctx.moveTo(-19,18);ctx.lineTo(-5,17);ctx.lineTo(-4,31);ctx.lineTo(-25,33);ctx.closePath();ctx.fill();ctx.beginPath();ctx.moveTo(7,18);ctx.lineTo(21,16);ctx.lineTo(27,32);ctx.lineTo(7,32);ctx.closePath();ctx.fill();
+ ctx.fillStyle='#101326';ctx.fillRect(-26,31,23,6);ctx.fillRect(6,30,24,6);
+ // Breastplate: multiple bevels give a pseudo-volumetric, metallic read.
+ ctx.fillStyle='#11162a';ctx.beginPath();ctx.moveTo(-21,-50);ctx.lineTo(20,-51);ctx.lineTo(28,-17);ctx.lineTo(9,4);ctx.lineTo(-14,3);ctx.lineTo(-28,-18);ctx.closePath();ctx.fill();
+ let chest=ctx.createLinearGradient(-25,-47,25,-14);chest.addColorStop(0,'#f1f8ff');chest.addColorStop(.13,'#9eb2cf');chest.addColorStop(.37,'#475776');chest.addColorStop(.63,'#d6e4f7');chest.addColorStop(.84,'#52627e');chest.addColorStop(1,'#1a203a');ctx.fillStyle=chest;ctx.beginPath();ctx.moveTo(-17,-48);ctx.lineTo(16,-48);ctx.lineTo(23,-19);ctx.lineTo(7,-4);ctx.lineTo(-10,-5);ctx.lineTo(-23,-20);ctx.closePath();ctx.fill();
+ ctx.strokeStyle='#eef6ff';ctx.globalAlpha=.72;ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(-15,-45);ctx.lineTo(-18,-22);ctx.lineTo(-8,-10);ctx.moveTo(12,-44);ctx.lineTo(17,-22);ctx.lineTo(7,-10);ctx.stroke();ctx.globalAlpha=1;
+ ctx.fillStyle='#252343';ctx.beginPath();ctx.moveTo(-8,-40);ctx.lineTo(0,-44);ctx.lineTo(9,-39);ctx.lineTo(6,-17);ctx.lineTo(0,-12);ctx.lineTo(-7,-18);ctx.closePath();ctx.fill();
+ ctx.save();ctx.shadowBlur=17;ctx.shadowColor='#77eaff';ctx.fillStyle='#c9ffff';ctx.beginPath();ctx.moveTo(0,-36);ctx.lineTo(6,-28);ctx.lineTo(0,-19);ctx.lineTo(-6,-28);ctx.closePath();ctx.fill();ctx.restore();
+ // Large shoulder pauldrons, with dark extruded sides and bright upper facets.
+ for(const side of [-1,1]){
+   ctx.save();ctx.translate(side*22,-41);ctx.scale(side,1);
+   ctx.fillStyle='#1b2039';ctx.beginPath();ctx.moveTo(-3,-8);ctx.lineTo(12,-9);ctx.lineTo(18,1);ctx.lineTo(13,12);ctx.lineTo(-1,9);ctx.closePath();ctx.fill();
+   const pg=ctx.createLinearGradient(0,-9,15,10);pg.addColorStop(0,'#f4f8ff');pg.addColorStop(.28,'#899dbb');pg.addColorStop(.7,'#3b4767');pg.addColorStop(1,'#11172c');ctx.fillStyle=pg;ctx.beginPath();ctx.moveTo(-2,-8);ctx.lineTo(10,-12);ctx.lineTo(15,-1);ctx.lineTo(10,7);ctx.lineTo(0,5);ctx.closePath();ctx.fill();
+   ctx.strokeStyle='#e9f4ff';ctx.lineWidth=1.1;ctx.beginPath();ctx.moveTo(-1,-6);ctx.lineTo(9,-9);ctx.lineTo(13,-1);ctx.stroke();ctx.restore();
+ }
+ // Neck, ivory mask, carved brow and swept horns
+ ctx.fillStyle='#17182e';ctx.fillRect(-8,-63,17,15);
+ const helm=ctx.createLinearGradient(-18,-95,16,-54);helm.addColorStop(0,'#ffffff');helm.addColorStop(.22,'#dce8f7');helm.addColorStop(.47,'#a7b9d2');helm.addColorStop(.7,'#edf5ff');helm.addColorStop(1,'#697b9e');ctx.fillStyle=helm;ctx.beginPath();ctx.moveTo(-16,-78);ctx.lineTo(-13,-92);ctx.lineTo(-4,-97);ctx.lineTo(10,-95);ctx.lineTo(17,-82);ctx.lineTo(13,-61);ctx.lineTo(3,-53);ctx.lineTo(-9,-57);ctx.lineTo(-16,-66);ctx.closePath();ctx.fill();
+ ctx.strokeStyle='#fff';ctx.lineWidth=1.25;ctx.beginPath();ctx.moveTo(-13,-78);ctx.lineTo(-10,-90);ctx.lineTo(-3,-94);ctx.moveTo(10,-91);ctx.lineTo(14,-81);ctx.stroke();
+ ctx.fillStyle='#111329';ctx.beginPath();ctx.moveTo(-17,-85);ctx.lineTo(-28,-105);ctx.lineTo(-9,-93);ctx.lineTo(-3,-88);ctx.closePath();ctx.fill();ctx.beginPath();ctx.moveTo(9,-90);ctx.lineTo(27,-109);ctx.lineTo(20,-88);ctx.lineTo(13,-81);ctx.closePath();ctx.fill();
+ ctx.fillStyle='#25304b';ctx.beginPath();ctx.moveTo(-13,-77);ctx.lineTo(-5,-81);ctx.lineTo(-2,-69);ctx.lineTo(-11,-67);ctx.closePath();ctx.fill();ctx.beginPath();ctx.moveTo(3,-81);ctx.lineTo(12,-77);ctx.lineTo(10,-67);ctx.lineTo(2,-69);ctx.closePath();ctx.fill();
+ ctx.save();ctx.shadowBlur=16;ctx.shadowColor='#8df5ff';ctx.fillStyle='#e8ffff';ctx.beginPath();ctx.moveTo(-11,-75);ctx.lineTo(-4,-78);ctx.lineTo(-5,-73);ctx.closePath();ctx.fill();ctx.fillStyle='#b5f8ff';ctx.beginPath();ctx.moveTo(4,-78);ctx.lineTo(12,-75);ctx.lineTo(5,-73);ctx.closePath();ctx.fill();ctx.restore();
+ // Tiny faceplate engravings and crest
+ ctx.strokeStyle='#7185a8';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(-1,-67);ctx.lineTo(0,-61);ctx.lineTo(4,-64);ctx.moveTo(-8,-82);ctx.lineTo(-4,-84);ctx.moveTo(4,-84);ctx.lineTo(10,-82);ctx.stroke();
+ ctx.restore();
+ // A rotating 3D energy armature builds a volumetric star behind the blade.
+ const orbX=hx+dir*(88+charge*38),orbY=hy-12;
+ ctx.save();ctx.translate(orbX,orbY);ctx.globalAlpha=.85;ctx.globalCompositeOperation='lighter';
+ const orb=ctx.createRadialGradient(0,0,2,0,0,28+charge*24);orb.addColorStop(0,'#fff');orb.addColorStop(.18,'#fff2bd');orb.addColorStop(.42,'#8df5ff');orb.addColorStop(.7,'#a77aff66');orb.addColorStop(1,'#884dff00');ctx.fillStyle=orb;ctx.beginPath();ctx.arc(0,0,28+charge*24,0,Math.PI*2);ctx.fill();
+ for(let i=0;i<6;i++){ctx.save();ctx.rotate(t*.065+i*Math.PI/3);ctx.strokeStyle=i%2?'#9ff6ff':'#ffeab0';ctx.lineWidth=1.6;ctx.beginPath();ctx.ellipse(0,0,18+charge*20,5+charge*7,0,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#fff';ctx.beginPath();ctx.moveTo(0,-29-charge*18);ctx.lineTo(5,-21-charge*17);ctx.lineTo(0,-14-charge*14);ctx.lineTo(-5,-21-charge*17);ctx.closePath();ctx.fill();ctx.restore();}
+ ctx.restore();
+ // 3D blade: a dark extruded spine, beveled steel faces, fuller and luminous edge.
+ const bladeAlpha=t<61?charge:1-release*.38;
+ ctx.save();ctx.translate(hx+dir*(24+charge*15),hy+8);ctx.rotate(dir*(.8-charge*.27+(t>58?release*.9:0)));ctx.scale(dir,1);ctx.globalAlpha=clamp(bladeAlpha,0,1);
+ const bladeLen=145+charge*96;
+ ctx.fillStyle='#090d1e';ctx.beginPath();ctx.moveTo(-12,17);ctx.lineTo(-8,-bladeLen+23);ctx.lineTo(0,-bladeLen-9);ctx.lineTo(15,-bladeLen+17);ctx.lineTo(20,18);ctx.lineTo(8,38);ctx.closePath();ctx.fill();
+ const bgd=ctx.createLinearGradient(-10,0,18,0);bgd.addColorStop(0,'#405273');bgd.addColorStop(.16,'#f1f8ff');bgd.addColorStop(.36,'#8bd8ff');bgd.addColorStop(.52,'#ffffff');bgd.addColorStop(.74,'#b6a2ff');bgd.addColorStop(1,'#252b4c');ctx.fillStyle=bgd;ctx.beginPath();ctx.moveTo(-8,12);ctx.lineTo(-5,-bladeLen+21);ctx.lineTo(1,-bladeLen-3);ctx.lineTo(13,-bladeLen+20);ctx.lineTo(15,12);ctx.lineTo(6,29);ctx.closePath();ctx.fill();
+ ctx.strokeStyle='#fff';ctx.lineWidth=2.4;ctx.shadowBlur=22;ctx.shadowColor='#b6f7ff';ctx.beginPath();ctx.moveTo(-4,7);ctx.lineTo(-1,-bladeLen+5);ctx.stroke();ctx.strokeStyle='#ffe8a5';ctx.lineWidth=1.1;ctx.beginPath();ctx.moveTo(8,5);ctx.lineTo(10,-bladeLen+20);ctx.stroke();
+ ctx.fillStyle='#191d3a';ctx.beginPath();ctx.moveTo(-23,2);ctx.lineTo(20,-2);ctx.lineTo(24,7);ctx.lineTo(17,15);ctx.lineTo(-17,17);ctx.closePath();ctx.fill();ctx.fillStyle='#d1e4ff';ctx.beginPath();ctx.moveTo(-19,1);ctx.lineTo(18,-2);ctx.lineTo(16,3);ctx.lineTo(-18,7);ctx.closePath();ctx.fill();
+ ctx.fillStyle='#f5d28a';ctx.fillRect(-4,12,12,7);ctx.fillStyle='#72513d';ctx.fillRect(-1,18,7,24);ctx.fillStyle='#ffe8ad';ctx.fillRect(-4,25,13,4);ctx.fillStyle='#c09aff';ctx.beginPath();ctx.moveTo(2,25);ctx.lineTo(7,31);ctx.lineTo(2,37);ctx.lineTo(-3,31);ctx.closePath();ctx.fill();ctx.restore();
+ // Charge-up shards orbit in perspective; during impact they become high-speed debris.
+ const shardCount=30;
+ for(let i=0;i<shardCount;i++){
+   const seed=i*2.399,tangle=t*.018+seed,rad=28+(i%7)*16+charge*110;
+   const sx=hx+Math.cos(tangle)*rad,sy=hy+Math.sin(tangle)*rad*.52;
+   ctx.save();ctx.translate(sx,sy);ctx.rotate(t*.045+seed);ctx.globalAlpha=(.28+.55*Math.sin(seed+t*.09)**2)*(1-after*.48);
+   ctx.fillStyle=i%3?'#8deeff':'#ffe6a0';ctx.shadowBlur=10;ctx.shadowColor=ctx.fillStyle;ctx.beginPath();ctx.moveTo(0,-3-(i%5));ctx.lineTo(4,0);ctx.lineTo(0,5+(i%5));ctx.lineTo(-3,0);ctx.closePath();ctx.fill();ctx.restore();
+ }
+ // The release creates a huge perspective blade-wave with a bright core and several refractive edges.
+ if(t>=58&&t<135){
+   const q=release,travel=easeOutCubic(clamp((t-63)/34,0,1)),length=80+travel*940,baseY=hy-2+Math.sin(t*.09)*8;
+   ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=clamp(1-(t-58)/80,0,1);
+   // Broad translucent blade cone, narrowing toward its vanishing point.
+   const cone=ctx.createLinearGradient(hx,baseY,hx+dir*length,baseY-28);cone.addColorStop(0,'#ffffff00');cone.addColorStop(.16,'#9df5ff99');cone.addColorStop(.4,'#b895ff99');cone.addColorStop(.68,'#f1edffdd');cone.addColorStop(1,'#ffffff00');ctx.fillStyle=cone;
+   ctx.beginPath();ctx.moveTo(hx+dir*16,baseY-25);ctx.lineTo(hx+dir*length,baseY-82+Math.sin(q*Math.PI)*10);ctx.lineTo(hx+dir*length,baseY+68);ctx.lineTo(hx+dir*20,baseY+15);ctx.closePath();ctx.fill();
+   for(let layer=0;layer<8;layer++){
+     const yOff=(layer-3.5)*9,reach=length*(.8+(layer%4)*.07);ctx.beginPath();ctx.moveTo(hx+dir*9,baseY+yOff);ctx.bezierCurveTo(hx+dir*(reach*.22),baseY-145+yOff*1.2,hx+dir*(reach*.65),baseY-120+yOff*1.6,hx+dir*reach,baseY-32+yOff*2.2);
+     ctx.strokeStyle=['#ffffff','#ffe8a2','#a8f5ff','#c29bff'][layer%4];ctx.lineWidth=[10,5,3,2][layer%4]*(1-travel*.5);ctx.shadowBlur=30;ctx.shadowColor=ctx.strokeStyle;ctx.stroke();
+   }
+   // Motion streaks with foreshortened starts and elongated ends.
+   for(let i=0;i<44;i++){
+     const startX=hx+dir*((i*37+t*13)%Math.max(130,length+40)),startY=65+(i*67%390)+Math.sin(t*.13+i)*12;
+     ctx.globalAlpha=.1+.27*Math.sin(i*1.7+t*.16)**2;ctx.strokeStyle=i%4?'#a7f3ff':'#fff1b4';ctx.lineWidth=i%7===0?3:1;ctx.beginPath();ctx.moveTo(startX,startY);ctx.lineTo(startX-dir*(18+(i%7)*13),startY+(i%3-1)*10);ctx.stroke();
+   }
+   // Ground-splitting shock rings, each with a different depth and focal width.
+   const wave=travel*620;for(let r=0;r<5;r++){ctx.globalAlpha=.7*(1-travel*.65);ctx.strokeStyle=['#ffffff','#ffe7a2','#91f5ff','#bd91ff','#ffffff'][r];ctx.lineWidth=6-r;ctx.shadowBlur=18;ctx.shadowColor=ctx.strokeStyle;ctx.beginPath();ctx.ellipse(hx+dir*wave*.47,ground-6,wave*(.18+r*.055),8+r*8,0,Math.PI,Math.PI*2);ctx.stroke();}
+   // Lightning cracks arc into the floor along the slash path.
+   for(let i=0;i<18;i++){
+     const x=hx+dir*(travel*(W+90)*(i+1)/19),top=baseY-115-(i%4)*17;let xx=x,yy=top;
+     ctx.globalAlpha=.42+.5*Math.sin(i+t*.2)**2;ctx.strokeStyle=i%3?'#9af4ff':'#fff0ac';ctx.lineWidth=1+i%3;ctx.beginPath();ctx.moveTo(xx,yy);
+     for(let k=0;k<5;k++){xx+=dir*(Math.sin(i*7+k*3+t*.21)*13);yy+=17;ctx.lineTo(xx,yy);}ctx.stroke();
+   }
+   ctx.restore();
+ }
+ // At the peak, erupt a sun-like implosion/expansion and a ring of crystalline fragments.
+ if(t>=78&&t<127){
+   const q=clamp((t-78)/49,0,1),rad=18+q*220;
+   ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=1-q*.72;
+   const flash=ctx.createRadialGradient(hx+dir*210,hy,1,hx+dir*210,hy,rad*1.8);flash.addColorStop(0,'#ffffff');flash.addColorStop(.12,'#fff7ce');flash.addColorStop(.3,'#9cf5ff');flash.addColorStop(.56,'#c391ff66');flash.addColorStop(1,'#8d55ff00');ctx.fillStyle=flash;ctx.beginPath();ctx.arc(hx+dir*210,hy,rad*1.8,0,Math.PI*2);ctx.fill();
+   for(let i=0;i<28;i++){const angle=i*Math.PI*2/28+t*.028,rr=rad*(.65+(i%4)*.12),xx=hx+dir*210+Math.cos(angle)*rr,yy=hy+Math.sin(angle)*rr*.55;ctx.save();ctx.translate(xx,yy);ctx.rotate(angle+t*.04);ctx.fillStyle=i%3?'#c6f8ff':'#fff0a6';ctx.shadowBlur=12;ctx.shadowColor=ctx.fillStyle;ctx.beginPath();ctx.moveTo(0,-7);ctx.lineTo(5,0);ctx.lineTo(0,12);ctx.lineTo(-4,0);ctx.closePath();ctx.fill();ctx.restore();}
+   ctx.restore();
+ }
+ // Afterimage: drifting white-hot fragments and a final elegant title card.
+ if(t>=121){
+   const fade=1-after*.88;ctx.save();ctx.globalAlpha=.95*fade;ctx.globalCompositeOperation='lighter';
+   for(let i=0;i<50;i++){
+     const x=((i*127-t*(.4+(i%5)*.2))%(W+50)+W+50)%(W+50),y=85+(i*83%350)+Math.sin(t*.08+i)*22;
+     ctx.save();ctx.translate(x,y);ctx.rotate(t*.02+i);ctx.strokeStyle=i%4?'#a9f2ff':'#ffe6ab';ctx.lineWidth=i%3?1.4:2.8;ctx.beginPath();ctx.moveTo(-5,-9);ctx.lineTo(0,0);ctx.lineTo(4,11);ctx.stroke();ctx.restore();
+   }
+   ctx.restore();
+   if(t>134){ctx.save();const titleAlpha=clamp((t-134)/12,0,1)*(1-clamp((t-164)/15,0,1));ctx.globalAlpha=titleAlpha;ctx.textAlign='center';ctx.shadowColor='#8eeeff';ctx.shadowBlur=24;ctx.fillStyle='#f7f0ff';ctx.font='900 28px system-ui';ctx.fillText('CORTE DO ABISMO',480,bar+38);ctx.shadowBlur=0;ctx.fillStyle='#dfc5ff';ctx.font='700 10px system-ui';ctx.fillText('ULTIMATE SUPREMA  ·  REINO SOMBRIO',480,bar+53);ctx.restore();}
+ }
+ // Cinematic bloom and a closing pulse fade to the normal gameplay scene.
+ ctx.save();const edge=ctx.createRadialGradient(W*.5,H*.48,80,W*.5,H*.48,650);edge.addColorStop(0,'#01020a00');edge.addColorStop(1,'#01020ad8');ctx.fillStyle=edge;ctx.fillRect(0,0,W,H);
+ if(t<14){ctx.globalAlpha=.35*(1-t/14);ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);}
+ if(t>=78&&t<=88){ctx.globalAlpha=.24*(1-Math.abs(84-t)/6);ctx.fillStyle='#fff7d6';ctx.fillRect(0,0,W,H);}
+ ctx.restore();ctx.restore();
+}
+function easeOutCubic(v){return 1-Math.pow(1-clamp01(v),3);}
+function clamp01(v){return Math.max(0,Math.min(1,v));}
+
+function loop(){update();draw();requestAnimationFrame(loop);}loop();
+
+
+const fullscreenButton=document.getElementById('fullscreenBtn');
+if(fullscreenButton){fullscreenButton.addEventListener('click',async()=>{
+ const target=document.querySelector('.shell');
+ try{
+  if(!document.fullscreenElement&&target.requestFullscreen)await target.requestFullscreen();
+  else if(document.fullscreenElement&&document.exitFullscreen)await document.exitFullscreen();
+  if(document.fullscreenElement&&screen.orientation&&screen.orientation.lock){try{await screen.orientation.lock('landscape');}catch(_){}}
+ }catch(_){fullscreenButton.textContent='GIRE O CELULAR';setTimeout(()=>fullscreenButton.textContent='⛶ TELA CHEIA',1600);}
+});}
+
+function setKey(k,v){keys[k]=!!v;}
+// Real-time WebGL 3D cinematic preview (Three.js loaded from CDN). Gameplay remains 2D.
+let threeCinemaStop=null;
+function launch3DCinema(onEnd=null){
+ const panel=$('cinema3d');let finished=false,watchdog=0;
+ window.__cinemaOnEnd=onEnd;panel.classList.add('active');$('cinemaCaption').textContent='O PODER DO ABISMO · PREPARE-SE';
+ const finish=()=>{if(finished)return;finished=true;if(watchdog)clearTimeout(watchdog);panel.classList.remove('active');if(threeCinemaStop){threeCinemaStop();threeCinemaStop=null;}if(window.__reino3dStop){window.__reino3dStop();window.__reino3dStop=null;}const cb=window.__cinemaOnEnd;window.__cinemaOnEnd=null;if(cb)cb();};
+ if(threeCinemaStop){threeCinemaStop();threeCinemaStop=null;}
+ // Safety exit: if WebGL/CDN fails or the animation callback stalls, restore gameplay and fire the ultimate.
+ watchdog=setTimeout(()=>{if(!finished){$('cinemaCaption').textContent='RAIO SUPREMO!';finish();}},6500);
+ if(!window.startReino3D){$('cinemaCaption').textContent='CARREGANDO CENA 3D…';window.dispatchEvent(new Event('reino3d-start'));return;}
+ threeCinemaStop=window.startReino3D(panel, (caption)=>{if(!finished)$('cinemaCaption').textContent=caption;}, finish);
+}
+$('closeCinema3d').addEventListener('click',()=>{if(threeCinemaStop){threeCinemaStop();threeCinemaStop=null;}if(window.__reino3dStop){window.__reino3dStop();window.__reino3dStop=null;}$('cinema3d').classList.remove('active');const cb=window.__cinemaOnEnd;window.__cinemaOnEnd=null;if(cb)cb();});
+// Keyboard controls (desktop and keyboards connected to phones).
+window.addEventListener('keydown',e=>{
+ const k=e.key.toLowerCase();
+ if(['arrowleft','arrowright','arrowup','arrowdown',' ','w','a','d','q','e','j','k','l','u','i'].includes(k)) e.preventDefault();
+ if(k==='arrowleft'||k==='a')setKey('left',true);
+ if(k==='arrowright'||k==='d')setKey('right',true);
+ if(k==='arrowup'||k==='w'||k===' ')setKey('jump',true);
+ if(k==='q')setKey('depthUp',true);if(k==='e'||k==='arrowdown')setKey('depthDown',true);
+ if(k==='j')attack(); if(k==='k')usePotion(); if(k==='l')castMagic(); if(k==='u')castUltimate(); if(k==='i')switchWeapon();
+},{passive:false});
+window.addEventListener('keyup',e=>{
+ const k=e.key.toLowerCase();
+ if(k==='arrowleft'||k==='a')setKey('left',false);
+ if(k==='arrowright'||k==='d')setKey('right',false);
+ if(k==='arrowup'||k==='w'||k===' ')setKey('jump',false);
+ if(k==='q')setKey('depthUp',false);if(k==='e'||k==='arrowdown')setKey('depthDown',false);
+});
+window.addEventListener('blur',()=>{setKey('left',false);setKey('right',false);setKey('jump',false);setKey('depthUp',false);setKey('depthDown',false);});
+
+// Buttons held down should keep working even on browsers with inconsistent pointer events.
+document.querySelectorAll('[data-hold]').forEach(b=>{
+ const k=b.dataset.hold;
+ const down=e=>{if(e){e.preventDefault();} if(k==='attack')attack();else setKey(k,true);};
+ const up=e=>{if(e){e.preventDefault();} if(k!=='attack')setKey(k,false);};
+ b.addEventListener('pointerdown',down); b.addEventListener('pointerup',up);
+ b.addEventListener('pointercancel',up); b.addEventListener('pointerleave',up);
+ b.addEventListener('touchstart',down,{passive:false}); b.addEventListener('touchend',up,{passive:false});
+ b.addEventListener('touchcancel',up,{passive:false});
+});
+// Virtual analog joystick: calculate direction from the current touch/pointer position.
+const joy=document.getElementById('joystick'),knob=document.getElementById('joyKnob');
+let joyPointer=null;
+function releaseJoy(){
+ joyPointer=null; knob.style.left='50%'; knob.style.top='50%';
+ setKey('left',false);setKey('right',false);setKey('depthUp',false);setKey('depthDown',false);
+}
+function moveJoy(e){
+ const r=joy.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
+ let dx=e.clientX-cx,dy=e.clientY-cy,lim=r.width*.29,dist=Math.hypot(dx,dy)||1;
+ if(dist>lim){dx=dx/dist*lim;dy=dy/dist*lim;}
+ knob.style.left=`calc(50% + ${dx}px)`;knob.style.top=`calc(50% + ${dy}px)`;
+ // Use a slightly lower threshold so the small mobile joystick responds reliably.
+ setKey('left',dx < -r.width*.07);setKey('right',dx > r.width*.07);
+ if(freeBattleMode){setKey('depthUp',dy < -r.height*.07);setKey('depthDown',dy > r.height*.07);}
+}
+joy.addEventListener('pointerdown',e=>{
+ e.preventDefault();joyPointer=e.pointerId;
+ try{joy.setPointerCapture(e.pointerId);}catch(_){}
+ moveJoy(e);
+});
+joy.addEventListener('pointermove',e=>{if(e.pointerId===joyPointer){e.preventDefault();moveJoy(e);}});
+joy.addEventListener('pointerup',releaseJoy);joy.addEventListener('pointercancel',releaseJoy);joy.addEventListener('lostpointercapture',releaseJoy);
+// Touch fallback for older Android WebViews.
+joy.addEventListener('touchstart',e=>{e.preventDefault();const t=e.changedTouches[0];joyPointer='touch';moveJoy(t);},{passive:false});
+joy.addEventListener('touchmove',e=>{if(joyPointer==='touch'){e.preventDefault();moveJoy(e.changedTouches[0]);}},{passive:false});
+joy.addEventListener('touchend',e=>{if(joyPointer==='touch')releaseJoy();},{passive:false});
+joy.addEventListener('touchcancel',e=>{if(joyPointer==='touch')releaseJoy();},{passive:false});
+
+document.querySelectorAll('[data-tap]').forEach(b=>{
+ const action=()=>{if(b.dataset.tap==='jump')setKey('jump',true);if(b.dataset.tap==='potion')usePotion();if(b.dataset.tap==='magic')castMagic();if(b.dataset.tap==='ultimate')castUltimate();if(b.dataset.tap==='weapon')switchWeapon();if(b.dataset.tap==='pause'||b.dataset.tap==='select'){if(state==='playing'){state='paused';showOverlay('JOGO PAUSADO','A aventura está pausada. Toque em CONTINUAR para voltar.','CONTINUAR');}else if(state==='paused'){state='playing';$('overlay').style.display='none';}}};
+ const release=()=>{if(b.dataset.tap==='jump')setKey('jump',false);};
+ b.addEventListener('pointerdown',e=>{e.preventDefault();action();});
+ b.addEventListener('pointerup',release);b.addEventListener('pointercancel',release);b.addEventListener('pointerleave',release);
+ b.addEventListener('touchstart',e=>{e.preventDefault();action();},{passive:false});
+ b.addEventListener('touchend',release,{passive:false});b.addEventListener('touchcancel',release,{passive:false});
+});
+})();
+</script><script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js';
+window.startReino3D=(panel,setCaption,onEnd)=>{
+ let stopped=false,frame=0,raf=0; const scene=new THREE.Scene();scene.background=new THREE.Color(0x05030f);scene.fog=new THREE.FogExp2(0x09051b,.035);
+ const camera=new THREE.PerspectiveCamera(43,1,.1,100);camera.position.set(0,2.2,11);
+ const renderer=new THREE.WebGLRenderer({antialias:false,alpha:false,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.0));renderer.setSize(panel.clientWidth,panel.clientHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.25;panel.prepend(renderer.domElement);
+ scene.add(new THREE.AmbientLight(0x9294ff,1.5));const key=new THREE.DirectionalLight(0xe4d8ff,3.2);key.position.set(-4,7,5);scene.add(key);const purple=new THREE.PointLight(0x922cff,35,18);purple.position.set(0,2,1);scene.add(purple);const cyan=new THREE.PointLight(0x35cfff,18,12);cyan.position.set(4,2,-1);scene.add(cyan);
+ const mat=(color,metalness=0,roughness=.35,emissive=0x000000,intensity=0)=>new THREE.MeshStandardMaterial({color,metalness,roughness,emissive,emissiveIntensity:intensity});
+ const dark=mat(0x111326,.8,.26),silver=mat(0xcbd4ee,.85,.2),violet=mat(0x7626ff,.35,.2,0x8a19ff,3.5),glow=mat(0xb7f7ff,.2,.18,0x44cfff,5),cloth=mat(0x080713,.1,.8);
+ const hero=new THREE.Group();scene.add(hero);hero.position.set(-1.1,-.1,0);
+ const torso=new THREE.Mesh(new THREE.CapsuleGeometry(.48,.95,6,12),dark);torso.position.y=1.55;hero.add(torso);
+ const head=new THREE.Mesh(new THREE.SphereGeometry(.53,24,18),silver);head.scale.set(.83,1.12,.72);head.position.set(0,2.55,.03);hero.add(head);
+ for(const side of [-1,1]){const horn=new THREE.Mesh(new THREE.ConeGeometry(.17,.9,12),silver);horn.position.set(side*.32,3.18,0);horn.rotation.z=side*-.42;hero.add(horn);const eye=new THREE.Mesh(new THREE.SphereGeometry(.075,12,8),glow);eye.position.set(side*.22,2.58,.48);hero.add(eye);const arm=new THREE.Mesh(new THREE.CapsuleGeometry(.16,.72,4,8),dark);arm.position.set(side*.65,1.65,0);arm.rotation.z=side*.35;hero.add(arm);const leg=new THREE.Mesh(new THREE.CapsuleGeometry(.19,.7,4,8),dark);leg.position.set(side*.25,.55,0);hero.add(leg);}
+ const cape=new THREE.Mesh(new THREE.ConeGeometry(.9,2.3,4,1,true),cloth);cape.position.set(0,1.5,-.45);cape.rotation.x=Math.PI;cape.scale.set(1,.9,.3);hero.add(cape);
+ const sword=new THREE.Group();hero.add(sword);sword.position.set(.7,1.65,.2);sword.rotation.z=-.8;
+ const blade=new THREE.Mesh(new THREE.BoxGeometry(.16,2.7,.12),violet);blade.position.y=1.55;sword.add(blade);const edge=new THREE.Mesh(new THREE.BoxGeometry(.045,2.65,.14),glow);edge.position.set(-.07,1.55,.04);sword.add(edge);const guard=new THREE.Mesh(new THREE.BoxGeometry(.65,.12,.2),silver);guard.position.y=.18;sword.add(guard);const grip=new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,.55,10),dark);grip.position.y=-.15;sword.add(grip);
+ const ring=new THREE.Mesh(new THREE.TorusGeometry(2.0,.035,8,100),violet);ring.position.set(0,2,-1.6);scene.add(ring);const ring2=new THREE.Mesh(new THREE.TorusGeometry(2.7,.018,6,100),glow);ring2.position.set(0,2,-1.8);scene.add(ring2);
+ const floor=new THREE.Mesh(new THREE.PlaneGeometry(100,100),mat(0x0d0a20,.25,.8));floor.rotation.x=-Math.PI/2;floor.position.y=-.2;scene.add(floor);
+ const grid=new THREE.GridHelper(50,55,0x7c38ff,0x27204a);grid.position.y=-.18;scene.add(grid);
+ const crystals=new THREE.Group();scene.add(crystals);for(let i=0;i<22;i++){const m=new THREE.Mesh(new THREE.OctahedronGeometry(.15+Math.random()*.3,0),i%2?violet:glow);m.position.set((Math.random()-.5)*15,Math.random()*6-1,(Math.random()-.5)*10-2);crystals.add(m);}
+ const count=420,positions=new Float32Array(count*3),vel=[];for(let i=0;i<count;i++){positions[i*3]=(Math.random()-.5)*9;positions[i*3+1]=Math.random()*7;positions[i*3+2]=(Math.random()-.5)*7;vel.push(.005+Math.random()*.025);}const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(positions,3));const particles=new THREE.Points(geo,new THREE.PointsMaterial({color:0xb98aff,size:.045,transparent:true,opacity:.9,blending:THREE.AdditiveBlending}));scene.add(particles);
+ let start=performance.now(),lastCaption=-1;const resize=()=>{if(!panel.clientWidth||!panel.clientHeight)return;camera.aspect=panel.clientWidth/panel.clientHeight;camera.updateProjectionMatrix();renderer.setSize(panel.clientWidth,panel.clientHeight);};window.addEventListener('resize',resize);
+ const animate=now=>{if(stopped)return;raf=requestAnimationFrame(animate);const t=(now-start)/1000;frame++;hero.rotation.y=Math.sin(t*1.4)*.16;hero.position.y=-.1+Math.sin(t*3)*.035;cape.rotation.z=Math.sin(t*4)*.08;sword.rotation.z=t<1.3?-.8+Math.sin(t*6)*.12:t<3.1?-.8+(t-1.3)*1.05:Math.sin(t*8)*.16;ring.rotation.z=t*.8;ring2.rotation.z=-t*.55;purple.intensity=24+Math.sin(t*8)*12;camera.position.x=Math.sin(t*.45)*.5;camera.position.z=t<1.8?11:t<3.2?11-(t-1.8)*2.2:7.9+Math.sin(t*1.8)*.2;camera.lookAt(0,1.6,0);const arr=geo.attributes.position.array;for(let i=0;i<count;i++){arr[i*3+1]+=vel[i]*(t>3?3:1);if(arr[i*3+1]>7)arr[i*3+1]=-1;}geo.attributes.position.needsUpdate=true;
+ if(t>1.1&&t<1.2&&lastCaption!==1){setCaption('AS RUNAS DESPERTAM');lastCaption=1;}if(t>2.4&&t<2.5&&lastCaption!==2){setCaption('A LÂMINA DO ABISMO');lastCaption=2;}if(t>3.8&&t<3.9&&lastCaption!==3){setCaption('CORTE SUPREMO');lastCaption=3;}
+ if(t>4.8){setCaption('RAIO SUPREMO!');stopped=true;setTimeout(()=>{onEnd();},220);return;}renderer.render(scene,camera);};raf=requestAnimationFrame(animate);
+ return ()=>{stopped=true;cancelAnimationFrame(raf);window.removeEventListener('resize',resize);renderer.dispose();geo.dispose();panel.querySelectorAll('canvas').forEach(c=>c.remove());};
+};
+window.addEventListener('reino3d-start',()=>{const p=document.getElementById('cinema3d');if(p.classList.contains('active')&&window.startReino3D){window.__reino3dStop=window.startReino3D(p,t=>document.getElementById('cinemaCaption').textContent=t,()=>{p.classList.remove('active');if(window.__reino3dStop){window.__reino3dStop();window.__reino3dStop=null;}const cb=window.__cinemaOnEnd;window.__cinemaOnEnd=null;if(cb)cb();});}});
+</script><script>if("serviceWorker" in navigator && location.protocol.startsWith("http")){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));}</script></body></html>
